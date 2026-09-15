@@ -61,18 +61,14 @@
                 <button onclick="switchTab('timer')" id="tab-timer-btn" class="tab-btn active px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">⏰ 보스 타이머</button>
                 <button onclick="switchTab('fountain')" id="tab-fountain-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">🗿 현자의 분수</button>
                 <button onclick="switchTab('distribute')" id="tab-distribute-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">💰 분배 계산기</button>
-                <button onclick="switchTab('member')" id="tab-member-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">👥 길드원 관리</button>
+                <button onclick="switchTab('member')" id="tab-member-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">👥 길드원 관리 (Cloud)</button>
             </div>
         </div>
     </nav>
 
     <main class="max-w-[1200px] mx-auto p-4 py-8">
         
-        <!-- ========================================== -->
-        <!-- 1. 보스 타이머 탭 -->
-        <!-- ========================================== -->
         <section id="timer-section" class="block">
-            
             <!-- 레이드 시간 헤더 -->
             <div class="flex items-center justify-center gap-4 mb-10">
                 <div class="text-zinc-400 text-sm">레이드 진행시간</div>
@@ -86,22 +82,17 @@
                 <div class="flex items-end justify-between mb-4 px-1">
                     <h2 class="text-xl font-bold text-white">원정대 관리 <span class="text-sm font-normal text-zinc-400 ml-2">총 <span id="total-members" class="text-white">0</span>명 · <span class="text-red-400">사망 <span id="dead-members">0</span>명</span></span></h2>
                 </div>
-                
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-3" id="parties-container">
-                    <!-- JS로 동적 생성 -->
+                    <!-- JS 동적 생성 -->
                 </div>
             </div>
 
             <!-- 보스 타이머 레이아웃 -->
             <div id="boss-timers-container" class="space-y-8">
-                <!-- JS로 동적 생성 -->
+                <!-- JS 동적 생성 -->
             </div>
-
         </section>
 
-        <!-- ========================================== -->
-        <!-- 2. 현자의 분수 탭 -->
-        <!-- ========================================== -->
         <section id="fountain-section" class="hidden max-w-2xl mx-auto">
             <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                 <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">🗿 현자의 분수 시뮬레이터</h2>
@@ -153,9 +144,6 @@
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 3. 분배 계산기 탭 -->
-        <!-- ========================================== -->
         <section id="distribute-section" class="hidden max-w-4xl mx-auto">
             <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                 <h2 class="text-xl font-bold mb-8 text-white flex items-center gap-2">💰 보스 리워드 분배기</h2>
@@ -220,11 +208,7 @@
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- 4. 길드원 관리 탭 -->
-        <!-- ========================================== -->
         <section id="member-section" class="hidden max-w-5xl mx-auto space-y-8">
-            
             <!-- 비밀번호 잠금 화면 -->
             <div id="member-lock-screen" class="bg-[#242427] rounded-xl border border-zinc-700 p-10 text-center shadow-lg max-w-md mx-auto mt-20">
                 <div class="text-5xl mb-4">🔒</div>
@@ -235,87 +219,75 @@
                 <button onclick="unlockMemberTab()" class="w-full bg-[#5b66f5] hover:bg-[#4f58d9] text-white py-3 rounded font-bold transition-colors shadow-lg">잠금 해제</button>
             </div>
 
-            <!-- 실제 길드원 관리 콘텐츠 (초기 숨김) -->
+            <!-- 실제 길드원 관리 콘텐츠 -->
             <div id="member-content" class="hidden space-y-8">
-
-            <!-- 연월 네비게이션 -->
-            <div class="flex justify-between items-center bg-[#242427] border border-zinc-700 p-4 rounded-xl shadow-lg">
-                <button onclick="changeMonth(-1)" class="bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded font-bold transition-colors shadow">◀ 이전 달</button>
-                <h2 class="text-2xl font-black text-white tracking-widest" id="month-display">2026년 9월</h2>
-                <button onclick="changeMonth(1)" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-5 py-2 rounded font-bold transition-colors shadow">다음 달 ▶</button>
-            </div>
-
-            <!-- 4-1. 길드인원 현황 -->
-            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
-                <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">👥 길드인원 현황</h2>
-                
-                <div class="flex gap-3 mb-6">
-                    <select id="new-member-role" class="bg-[#1a1a1c] border border-zinc-600 text-white px-4 py-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold cursor-pointer">
-                        <option value="member">👤 길드원</option>
-                        <option value="admin">🛡️ 운영진</option>
-                        <option value="master">👑 길드장</option>
-                    </select>
-                    <input type="text" id="new-member-input" placeholder="추가할 길드원 닉네임 입력 (Enter로 추가 가능)" class="flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors" onkeypress="if(event.key==='Enter') addGuildMember()">
-                    <button onclick="addGuildMember()" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-6 py-3 rounded font-bold transition-colors shadow-lg">인원 추가</button>
+                <!-- 클라우드 연동 상태 표시줄 -->
+                <div id="cloud-status" class="bg-blue-900/30 border border-blue-500/50 text-blue-300 text-sm p-3 rounded text-center shadow-lg">
+                    🔄 실시간 클라우드 연결 중...
                 </div>
 
-                <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg min-h-[120px] space-y-6">
-                    
-                    <!-- 직급별 그룹 렌더링 -->
-                    <div>
-                        <h3 class="text-yellow-400 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">👑 길드장</h3>
-                        <div id="guild-master-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-blue-400 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">🛡️ 운영진</h3>
-                        <div id="guild-admin-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-zinc-300 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">👤 길드원</h3>
-                        <div id="guild-member-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
-                    </div>
-
-                    <div class="mt-2 border-t border-zinc-700 pt-4">
-                        <p class="text-xs text-zinc-400">※ 길드스킬 <span class="bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">미인증</span> 상태인 길드원은 명단에서 붉은색으로 표시됩니다.</p>
-                    </div>
+                <!-- 연월 네비게이션 -->
+                <div class="flex justify-between items-center bg-[#242427] border border-zinc-700 p-4 rounded-xl shadow-lg">
+                    <button onclick="changeMonth(-1)" class="bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded font-bold transition-colors shadow">◀ 이전 달</button>
+                    <h2 class="text-2xl font-black text-white tracking-widest" id="month-display">2026년 9월</h2>
+                    <button onclick="changeMonth(1)" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-5 py-2 rounded font-bold transition-colors shadow">다음 달 ▶</button>
                 </div>
-            </div>
 
-            <!-- 4-2. 길드스킬 현황 (드래그 앤 드롭) -->
-            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
-                <h2 class="text-xl font-bold mb-2 text-white flex items-center gap-2">✨ 길드스킬 현황</h2>
-                <p class="text-sm text-zinc-400 mb-6">아래 이름표를 마우스로 끌어서(Drag & Drop) 인증 상태를 변경하세요.</p>
-                
-                <div class="grid grid-cols-2 gap-6">
-                    <!-- 미인증 영역 -->
-                    <div class="bg-[#1a1a1c] border-2 border-dashed border-red-500/30 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, false)" ondragover="allowDrop(event)">
-                        <h3 class="text-red-400 font-bold mb-4 text-center border-b border-red-500/20 pb-2">❌ 미인증</h3>
-                        <div id="unverified-container" class="flex-1 flex flex-col gap-2">
-                            <!-- 드래그 아이템이 배치되는 곳 -->
+                <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                    <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">👥 길드인원 현황</h2>
+                    
+                    <div class="flex gap-3 mb-2">
+                        <select id="new-member-role" class="bg-[#1a1a1c] border border-zinc-600 text-white px-4 py-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold cursor-pointer">
+                            <option value="member">👤 길드원</option>
+                            <option value="admin">🛡️ 운영진</option>
+                            <option value="master">👑 길드장</option>
+                        </select>
+                        <input type="text" id="new-member-input" placeholder="추가할 길드원 닉네임 입력 (Enter로 추가)" class="flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors" onkeypress="if(event.key==='Enter') addGuildMember()">
+                        <button onclick="addGuildMember()" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-6 py-3 rounded font-bold transition-colors shadow-lg">인원 추가</button>
+                    </div>
+                    <!-- 오류 메시지 출력란 -->
+                    <div id="member-add-error" class="text-red-400 text-sm font-bold mb-4 hidden bg-red-500/10 border border-red-500/20 p-2 rounded text-center"></div>
+
+                    <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg min-h-[120px] space-y-6">
+                        <div>
+                            <h3 class="text-yellow-400 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">👑 길드장</h3>
+                            <div id="guild-master-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
                         </div>
-                    </div>
-
-                    <!-- 인증 완료 영역 -->
-                    <div class="bg-[#1a1a1c] border-2 border-dashed border-[#5b66f5]/40 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, true)" ondragover="allowDrop(event)">
-                        <h3 class="text-[#5b66f5] font-bold mb-4 text-center border-b border-[#5b66f5]/20 pb-2">✅ 인증 완료</h3>
-                        <div id="verified-container" class="flex-1 flex flex-col gap-2">
-                            <!-- 드래그 아이템이 배치되는 곳 -->
+                        <div>
+                            <h3 class="text-blue-400 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">🛡️ 운영진</h3>
+                            <div id="guild-admin-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-zinc-300 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">👤 길드원</h3>
+                            <div id="guild-member-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
+                        </div>
+                        <div class="mt-2 border-t border-zinc-700 pt-4">
+                            <p class="text-xs text-zinc-400">※ 길드스킬 <span class="bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">미인증</span> 상태인 길드원은 명단에서 붉은색으로 표시됩니다.</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                    <h2 class="text-xl font-bold mb-2 text-white flex items-center gap-2">✨ 길드스킬 현황</h2>
+                    <p class="text-sm text-zinc-400 mb-6">아래 이름표를 마우스로 끌어서(Drag & Drop) 인증 상태를 변경하세요. (실시간 저장)</p>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-[#1a1a1c] border-2 border-dashed border-red-500/30 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, false)" ondragover="allowDrop(event)">
+                            <h3 class="text-red-400 font-bold mb-4 text-center border-b border-red-500/20 pb-2">❌ 미인증</h3>
+                            <div id="unverified-container" class="flex-1 flex flex-col gap-2"></div>
+                        </div>
+                        <div class="bg-[#1a1a1c] border-2 border-dashed border-[#5b66f5]/40 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, true)" ondragover="allowDrop(event)">
+                            <h3 class="text-[#5b66f5] font-bold mb-4 text-center border-b border-[#5b66f5]/20 pb-2">✅ 인증 완료</h3>
+                            <div id="verified-container" class="flex-1 flex flex-col gap-2"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
     </main>
 
     <script>
-        // ==========================================
-        // 글로벌 및 공통 기능
-        // ==========================================
         let audioCtx = null;
         function playBeep() {
             if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -360,15 +332,20 @@
             if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
         }
+        
+        function speakText(text) {
+            if (!window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; 
+            utterance.rate = 1.0; 
+            window.speechSynthesis.speak(utterance);
+        }
 
         // ==========================================
-        // 1. 보스 타이머 및 파티 관리
+        // 1. 보스 타이머 로직
         // ==========================================
-        let mainInterval = null;
         let isRaidRunning = false;
         let raidSeconds = 0;
-
-        // 파티 데이터 (사망 10분 = 600초, 부활 30분 = 1800초)
         let partiesData = Array(5).fill().map((_, i) => [
             { id: `p${i}m0`, name: `파티원1`, job: '비숍', isDead: false, deathTime: 600, deathCurrent: 0, isRes: false, resTime: 1800, resCurrent: 0 }
         ]);
@@ -376,25 +353,22 @@
 
         const timerConfig = [
             { type: 'divider', title: '⚔️ 공무' },
-            { id: 't1', title: '좌머리 공무', time: 45, icon: '⚔️', group: 'row1' },
-            { id: 't2', title: '중머리 공무', time: 45, icon: '⚔️', group: 'row1' },
-            { id: 't3', title: '우머리 공무', time: 45, icon: '⚔️', group: 'row1' },
-            
+            { id: 't1', title: '좌머리 공무', time: 45, icon: '⚔️' },
+            { id: 't2', title: '중머리 공무', time: 45, icon: '⚔️' },
+            { id: 't3', title: '우머리 공무', time: 45, icon: '⚔️' },
             { type: 'divider', title: '📿 버프해제' },
-            { id: 't4', title: '중머리 5갈', time: 300, icon: '📿', group: 'row2' },
-            { id: 't5', title: '중머리 3갈', time: 180, icon: '📿', group: 'row2' },
-            { id: 't6', title: '좌팔 (HP:60%)', time: 300, icon: '📿', group: 'row2' },
-            
+            { id: 't4', title: '중머리 5갈', time: 300, icon: '📿' },
+            { id: 't5', title: '중머리 3갈', time: 180, icon: '📿' },
+            { id: 't6', title: '좌팔 (HP:60%)', time: 300, icon: '📿' },
             { type: 'divider', title: '🪆 유혹담당' },
-            { id: 't7', title: '첫 개인 유혹', time: 120, icon: '🪆', group: 'row3', editable: true },
-            { id: 't8', title: '개인 유혹 (좌팔)', time: 180, icon: '🪆', group: 'row3', editable: true },
-            { id: 't9', title: '개인 유혹 (우팔)', time: 180, icon: '🪆', group: 'row3', editable: true },
-            { id: 't10', title: '단체 유혹', time: 60, icon: '🪆', group: 'row4', editable: true },
-            { id: 't11', title: '위협', time: 60, icon: '👻', group: 'row4', editable: true },
-
+            { id: 't7', title: '첫 개인 유혹', time: 120, icon: '🪆', editable: true },
+            { id: 't8', title: '개인 유혹 (좌팔)', time: 180, icon: '🪆', editable: true },
+            { id: 't9', title: '개인 유혹 (우팔)', time: 180, icon: '🪆', editable: true },
+            { id: 't10', title: '단체 유혹', time: 60, icon: '🪆', editable: true },
+            { id: 't11', title: '위협', time: 60, icon: '👻', editable: true },
             { type: 'divider', title: '🛡️ 공격반사' },
-            { id: 't12', title: '공반', time: 60, icon: '🛡️', group: 'row5', editable: true },
-            { id: 't13', title: '공반', time: 60, icon: '🛡️', group: 'row5', editable: true },
+            { id: 't12', title: '공반', time: 60, icon: '🛡️', editable: true },
+            { id: 't13', title: '공반', time: 60, icon: '🛡️', editable: true },
         ];
         let timers = {};
 
@@ -403,11 +377,9 @@
             return colors[job] || 'bg-gray-600';
         }
 
-        // 파티 렌더링
         function renderParties() {
             const container = document.getElementById('parties-container');
-            let total = 0, dead = 0;
-            let html = '';
+            let total = 0, dead = 0, html = '';
 
             partiesData.forEach((p, pIdx) => {
                 total += p.length;
@@ -437,12 +409,10 @@
                                 <input type="text" onchange="updateName(${pIdx}, ${mIdx}, this.value)" value="${m.name}" class="bg-transparent text-sm font-bold border-b border-transparent hover:border-zinc-500 focus:border-[#5b66f5] outline-none w-full truncate ${m.isDead ? 'text-red-400' : 'text-gray-200'}">
                                 <button onclick="removeMember(${pIdx}, ${mIdx})" class="text-xs text-red-500 opacity-0 group-hover:opacity-100 absolute right-2 top-2">✕</button>
                             </div>
-                            
                             <button onclick="toggleDeath(${pIdx}, ${mIdx})" class="w-full flex justify-between items-center p-1.5 rounded text-xs font-bold mb-1 transition-colors ${m.isDead ? 'bg-zinc-800 text-red-400 border border-red-500/30' : 'bg-[#1a1a1c] hover:bg-zinc-700 text-zinc-400'}">
                                 <span>👻 사망 (10분)</span>
                                 ${m.isDead ? `<span class="digital-font text-base">${formatTime(m.deathCurrent)}</span>` : ''}
                             </button>
-                            
                             <button onclick="toggleRes(${pIdx}, ${mIdx})" class="w-full flex justify-between items-center p-1.5 rounded text-xs font-bold transition-colors ${m.isRes ? 'bg-zinc-800 text-orange-300 border border-orange-500/30' : 'bg-[#1a1a1c] hover:bg-zinc-700 text-zinc-400'}">
                                 <span>👼 리저 (30분)</span>
                                 ${m.isRes ? `<span class="digital-font text-base">${formatTime(m.resCurrent)}</span>` : ''}
@@ -456,15 +426,9 @@
                         <div class="bg-[#242427] p-2 rounded border border-[#5b66f5]/50">
                             <div class="flex gap-1 mb-2">
                                 <select id="add-job-${pIdx}" class="text-xs bg-[#1a1a1c] text-white p-1 rounded outline-none border border-zinc-600">
-                                    <option value="비숍">비숍</option>
-                                    <option value="나로">나로</option>
-                                    <option value="히어로">히어로</option>
-                                    <option value="팔라딘">팔라딘</option>
-                                    <option value="보마">보마</option>
-                                    <option value="신궁">신궁</option>
-                                    <option value="캡틴">캡틴</option>
-                                    <option value="바이퍼">바이퍼</option>
-                                    <option value="손님">손님</option>
+                                    <option value="비숍">비숍</option><option value="나로">나로</option><option value="히어로">히어로</option>
+                                    <option value="팔라딘">팔라딘</option><option value="보마">보마</option><option value="신궁">신궁</option>
+                                    <option value="캡틴">캡틴</option><option value="바이퍼">바이퍼</option><option value="손님">손님</option>
                                 </select>
                                 <input type="text" id="add-name-${pIdx}" placeholder="이름" class="text-xs bg-[#1a1a1c] text-white p-1 rounded outline-none border border-zinc-600 w-full">
                             </div>
@@ -477,16 +441,13 @@
                 } else if (p.length < 6) {
                     html += `<button onclick="addingToParty = ${pIdx}; renderParties()" class="w-full py-2 border border-dashed border-zinc-600 hover:border-zinc-400 text-zinc-400 hover:text-zinc-200 rounded text-xs transition-colors">+ 파티원 추가</button>`;
                 }
-                
                 html += `</div></div>`;
             });
-
             container.innerHTML = html;
             document.getElementById('total-members').innerText = total;
             document.getElementById('dead-members').innerText = dead;
         }
 
-        // 파티원 로직
         function updateJob(pIdx, mIdx, val) { partiesData[pIdx][mIdx].job = val; renderParties(); }
         function updateName(pIdx, mIdx, val) { partiesData[pIdx][mIdx].name = val; renderParties(); }
         function removeMember(pIdx, mIdx) { partiesData[pIdx].splice(mIdx, 1); renderParties(); }
@@ -521,7 +482,6 @@
                 } else {
                     if(!timers[item.id]) { timers[item.id] = { ...item, current: item.time, isRunning: false, isMuted: false }; }
                     const t = timers[item.id];
-                    
                     const displayEl = t.editable 
                         ? `<input type="text" id="display-${t.id}" value="${formatTime(t.time)}" class="timer-input digital-font text-5xl font-bold text-white z-10 relative bg-transparent" onchange="editTime('${t.id}', this.value)" onclick="this.select()">`
                         : `<div id="display-${t.id}" class="digital-font text-5xl font-bold text-white z-10 relative cursor-default">${formatTime(t.current)}</div>`;
@@ -530,7 +490,6 @@
                         <div class="bg-[#242427] border border-zinc-700 rounded-xl h-[100px] flex overflow-hidden relative shadow-lg group">
                             <div id="progress-${t.id}" class="absolute top-0 left-0 bottom-0 bg-[#5b66f5]/20 transition-all duration-1000 ease-linear" style="width: 100%;"></div>
                             <div id="flash-${t.id}" class="absolute inset-0 bg-red-500/30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
-                            
                             <div class="flex-1 flex flex-col justify-center items-center p-3 relative z-10">
                                 <div class="w-full flex justify-between items-center text-zinc-400 text-sm font-bold mb-1 px-2">
                                     <span class="flex items-center gap-1.5">${t.icon} ${t.title}</span>
@@ -547,13 +506,11 @@
             container.innerHTML = html;
         }
 
-        // 숫자 클릭하여 시간 수정
         function editTime(id, val) {
             let parts = val.split(':');
             let secs = 0;
             if(parts.length >= 2) secs = parseInt(parts[0]) * 60 + parseInt(parts[1]);
             else secs = parseInt(parts[0]);
-            
             if(isNaN(secs) || secs < 0) secs = timers[id].time; 
             timers[id].time = secs;
             timers[id].current = secs;
@@ -561,19 +518,15 @@
             updateTimerUI(id);
         }
 
-        // **정지 버튼 = 원래 설정한 시간으로 완전 초기화(리셋)**
         function toggleTimer(id) {
             if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if(audioCtx.state === 'suspended') audioCtx.resume();
-
             const t = timers[id];
             if(t.isRunning) {
-                // 실행 중에 '정지' 누르면 초기화 (일시정지 아님)
                 t.isRunning = false;
                 t.current = t.time; 
                 document.getElementById(`flash-${t.id}`).classList.remove('animate-pulse', 'opacity-100');
             } else {
-                // '시작' 누름
                 if(t.current <= 0) {
                     t.current = t.time;
                     document.getElementById(`flash-${t.id}`).classList.remove('animate-pulse', 'opacity-100');
@@ -642,28 +595,16 @@
             }
         }
 
-        // 웹 브라우저 TTS (음성 읽어주기) 함수 추가
-        function speakText(text) {
-            if (!window.speechSynthesis) return;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ko-KR'; // 한국어 설정
-            utterance.rate = 1.0; // 읽는 속도
-            window.speechSynthesis.speak(utterance);
-        }
-
-        // 전체 카운트다운 인터벌
         setInterval(() => {
             if(isRaidRunning) {
                 raidSeconds++;
                 document.getElementById('raid-time-display').innerText = formatTime(raidSeconds);
             }
-
             let partyChanged = false;
             partiesData.forEach(p => {
                 p.forEach(m => {
                     if(m.isDead && m.deathCurrent > 0) { m.deathCurrent--; partyChanged = true; }
                     else if(m.isDead && m.deathCurrent <= 0) { m.isDead = false; partyChanged = true; }
-                    
                     if(m.isRes && m.resCurrent > 0) { m.resCurrent--; partyChanged = true; }
                     else if(m.isRes && m.resCurrent <= 0) { m.isRes = false; partyChanged = true; }
                 });
@@ -675,12 +616,7 @@
                     if(t.current > 0) {
                         t.current--;
                         updateTimerUI(t.id);
-                        
-                        // 10초가 남았고 음소거 상태가 아닐 때 음성 출력
-                        if(t.current === 10 && !t.isMuted) {
-                            speakText(`${t.title} 10초 전`);
-                        }
-                        
+                        if(t.current === 10 && !t.isMuted) speakText(`${t.title} 10초 전`);
                         if(t.current === 0) {
                             if(!t.isMuted) playBeep();
                             const flash = document.getElementById(`flash-${t.id}`);
@@ -693,9 +629,7 @@
             });
         }, 1000);
 
-        // ==========================================
-        // 2. 현자의 분수 로직
-        // ==========================================
+        //        // 2. 현자의 분수 로직
         const fountainItems = ["훈장", "두루마리", "음식", "와인"];
         let possibleCases = [];
 
@@ -723,13 +657,6 @@
             return { exact, partial };
         }
 
-        function showError(msg) {
-            const errEl = document.getElementById('fountain-error');
-            errEl.innerText = msg;
-            errEl.classList.remove('hidden');
-            setTimeout(() => { errEl.classList.add('hidden'); }, 4000);
-        }
-
         function submitGuess() {
             const guesses = Array.from(document.querySelectorAll('.guess')).map(sel => sel.value);
             const exact = parseInt(document.getElementById('exact').value) || 0;
@@ -737,10 +664,12 @@
             const none = parseInt(document.getElementById('none').value) || 0;
 
             if (exact + partial + none !== 4) {
-                showError("입력 오류! '맞습니다', '틀리다', '모른다' 개수의 합은 반드시 4가 되어야 합니다.");
+                const errEl = document.getElementById('fountain-error');
+                errEl.innerText = "입력 오류! '맞습니다', '틀리다', '모른다' 개수의 합은 반드시 4가 되어야 합니다.";
+                errEl.classList.remove('hidden');
+                setTimeout(() => errEl.classList.add('hidden'), 4000);
                 return;
             }
-
             possibleCases = possibleCases.filter(secret => {
                 let fb = getFeedback(guesses, secret);
                 return fb.exact === exact && fb.partial === partial;
@@ -767,9 +696,7 @@
             }
         }
 
-        // ==========================================
         // 3. 분배 계산기 로직
-        // ==========================================
         function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
         function parseNum(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
 
@@ -807,92 +734,156 @@
             calcDist();
         }
 
-        // 이벤트 리스너 등록
         document.getElementById('dist-sales').addEventListener('input', handleNumInput);
         document.getElementById('dist-scissors').addEventListener('input', handleNumInput);
         document.getElementById('dist-mail-fixed').addEventListener('input', handleNumInput);
         document.getElementById('dist-fee').addEventListener('input', calcDist);
         document.getElementById('dist-people').addEventListener('input', calcDist);
         document.getElementById('dist-mail-percent').addEventListener('input', calcDist);
+    </script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        // 4. 길드원 관리 및 길드스킬 현황 (Drag & Drop)
-        // ==========================================
+        // 기존 로직 변수들 글로벌화
         let currentDate = new Date();
-        let activeYear = currentDate.getFullYear();
-        let activeMonth = currentDate.getMonth() + 1;
+        window.activeYear = currentDate.getFullYear();
+        window.activeMonth = currentDate.getMonth() + 1;
+        window.guildDataByMonth = JSON.parse(localStorage.getItem('chuokGuildData')) || {}; 
+        window.isMemberTabUnlocked = false;
         
-        // 새로고침 방지: 브라우저 로컬 스토리지에서 기존 데이터를 불러오거나, 없으면 빈 객체로 시작
-        let guildDataByMonth = JSON.parse(localStorage.getItem('chuokGuildData')) || {}; 
-        let isMemberTabUnlocked = false; // 비밀번호 잠금 상태
+        let firebaseReady = false;
+        let setDocGlobal = null;
+        let guildDocRefGlobal = null;
 
-        // 데이터를 브라우저에 저장하는 함수
-        function saveGuildData() {
-            localStorage.setItem('chuokGuildData', JSON.stringify(guildDataByMonth));
+        // Firebase 설정 (유저 제공값)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA6-WVBhlZx8PA8qTmrDlR03O0lIvdoRDc",
+            authDomain: "fighting-dog.firebaseapp.com",
+            projectId: "fighting-dog",
+            storageBucket: "fighting-dog.firebasestorage.app",
+            messagingSenderId: "254470661072",
+            appId: "1:254470661072:web:56207d4a96e0af6459cfd5",
+            measurementId: "G-WLCQFQFE02"
+        };
+
+        async function initFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+                await signInAnonymously(auth);
+                
+                // Firestore 문서 경로 (이 경로에 모든 월별 데이터가 통째로 저장됨)
+                guildDocRefGlobal = doc(db, 'artifacts', 'fighting-dog', 'public', 'data', 'guildData', 'monthlyMembers');
+                setDocGlobal = setDoc;
+                firebaseReady = true;
+
+                // 연결 성공 UI 반영
+                const statusEl = document.getElementById('cloud-status');
+                statusEl.innerHTML = "✅ 실시간 클라우드 동기화 켜짐 (자동 저장 중)";
+                statusEl.classList.replace('bg-blue-900/30', 'bg-green-900/30');
+                statusEl.classList.replace('border-blue-500/50', 'border-green-500/50');
+                statusEl.classList.replace('text-blue-300', 'text-green-300');
+
+                // 실시간 스냅샷 리스너 (다른 사람이 수정하면 내 화면도 갱신)
+                onSnapshot(guildDocRefGlobal, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const cloudData = docSnap.data().data;
+                        if(cloudData) {
+                            window.guildDataByMonth = cloudData;
+                            localStorage.setItem('chuokGuildData', JSON.stringify(window.guildDataByMonth)); 
+                            if (window.isMemberTabUnlocked) {
+                                window.ensureMonthData();
+                                window.renderGuildMembers();
+                            }
+                        }
+                    }
+                }, (error) => {
+                    console.error("클라우드 읽기 에러:", error);
+                    statusEl.innerHTML = "❌ 클라우드 연결 오류 (Firebase 규칙 설정을 확인하세요)";
+                    statusEl.classList.replace('bg-green-900/30', 'bg-red-900/30');
+                });
+            } catch (e) {
+                console.error("Firebase 로드 실패:", e);
+                document.getElementById('cloud-status').innerHTML = "⚠️ 클라우드 연결 실패. 로컬 저장소 모드로 작동합니다.";
+            }
         }
 
-        function unlockMemberTab() {
+        // 스크립트 로드 시 파이어베이스 초기화
+        initFirebase();
+
+        // 브라우저 및 클라우드 동시 저장 함수
+        window.saveGuildData = function() {
+            localStorage.setItem('chuokGuildData', JSON.stringify(window.guildDataByMonth));
+            if (firebaseReady && setDocGlobal && guildDocRefGlobal) {
+                setDocGlobal(guildDocRefGlobal, { data: window.guildDataByMonth }).catch(e => console.error("클라우드 저장 실패", e));
+            }
+        }
+
+        window.unlockMemberTab = function() {
             const pwInput = document.getElementById('member-password');
             const errDiv = document.getElementById('password-error');
-            
             if (pwInput.value === '191919') {
-                isMemberTabUnlocked = true;
+                window.isMemberTabUnlocked = true;
                 document.getElementById('member-lock-screen').classList.add('hidden');
                 document.getElementById('member-content').classList.remove('hidden');
                 document.getElementById('member-content').classList.add('block');
-                pwInput.value = ''; // 입력창 비우기
+                pwInput.value = ''; 
+                
+                // 열릴 때 현재 달 렌더링
+                document.getElementById('month-display').innerText = `${window.activeYear}년 ${window.activeMonth}월`;
+                window.ensureMonthData();
+                window.renderGuildMembers();
             } else {
                 errDiv.classList.remove('hidden');
                 setTimeout(() => errDiv.classList.add('hidden'), 3000);
             }
         }
 
-        // 현재 보고 있는 "연도-월" 키값 생성
-        function getActiveKey() {
-            return `${activeYear}-${activeMonth}`;
+        window.getActiveKey = function() {
+            return `${window.activeYear}-${window.activeMonth}`;
         }
 
-        // 해당 월의 배열이 없으면 초기화
-        function ensureMonthData() {
-            const key = getActiveKey();
-            if (!guildDataByMonth[key]) {
-                guildDataByMonth[key] = [];
+        window.ensureMonthData = function() {
+            const key = window.getActiveKey();
+            if (!window.guildDataByMonth[key]) {
+                window.guildDataByMonth[key] = [];
             }
         }
 
-        // 달력 이동 로직
-        function changeMonth(offset) {
-            const currentKey = getActiveKey();
+        window.changeMonth = function(offset) {
+            const currentKey = window.getActiveKey();
+            window.activeMonth += offset;
+            if (window.activeMonth > 12) { window.activeMonth = 1; window.activeYear++; }
+            if (window.activeMonth < 1) { window.activeMonth = 12; window.activeYear--; }
             
-            activeMonth += offset;
-            if (activeMonth > 12) { activeMonth = 1; activeYear++; }
-            if (activeMonth < 1) { activeMonth = 12; activeYear--; }
-            
-            const newKey = getActiveKey();
-            
-            // 이동할 달의 데이터가 없으면, 직전에 보고 있던 달의 데이터를 깊은 복사(그대로 가져옴)
-            if (!guildDataByMonth[newKey]) {
-                guildDataByMonth[newKey] = JSON.parse(JSON.stringify(guildDataByMonth[currentKey] || []));
-                saveGuildData(); // 새 달 데이터를 생성했으니 자동 저장
+            const newKey = window.getActiveKey();
+            if (!window.guildDataByMonth[newKey]) {
+                window.guildDataByMonth[newKey] = JSON.parse(JSON.stringify(window.guildDataByMonth[currentKey] || []));
+                window.saveGuildData();
             }
-            
-            document.getElementById('month-display').innerText = `${activeYear}년 ${activeMonth}월`;
-            renderGuildMembers();
+            document.getElementById('month-display').innerText = `${window.activeYear}년 ${window.activeMonth}월`;
+            window.renderGuildMembers();
         }
 
-        function addGuildMember() {
+        window.addGuildMember = function() {
             const input = document.getElementById('new-member-input');
             const roleSelect = document.getElementById('new-member-role');
             const name = input.value.trim();
             const role = roleSelect.value;
-
             if (!name) return;
             
-            const activeData = guildDataByMonth[getActiveKey()];
+            window.ensureMonthData();
+            const activeData = window.guildDataByMonth[window.getActiveKey()];
 
-            // 중복 검사
             if (activeData.find(m => m.name === name)) {
-                alert("이미 등록된 길드원입니다.");
+                const errEl = document.getElementById('member-add-error');
+                errEl.innerText = "이미 등록된 길드원 닉네임입니다.";
+                errEl.classList.remove('hidden');
+                setTimeout(() => errEl.classList.add('hidden'), 3000);
                 return;
             }
 
@@ -900,61 +891,28 @@
                 id: 'guild_m_' + Date.now(),
                 name: name,
                 role: role,
-                isVerified: false // 기본값: 미인증
+                isVerified: false
             });
             
-            saveGuildData(); // 인원 추가 후 자동 저장
+            window.saveGuildData(); 
             input.value = '';
-            renderGuildMembers();
+            window.renderGuildMembers();
         }
 
-        function removeGuildMember(id) {
-            const key = getActiveKey();
-            guildDataByMonth[key] = guildDataByMonth[key].filter(m => m.id !== id);
-            saveGuildData(); // 인원 삭제 후 자동 저장
-            renderGuildMembers();
+        window.removeGuildMember = function(id) {
+            const key = window.getActiveKey();
+            window.guildDataByMonth[key] = window.guildDataByMonth[key].filter(m => m.id !== id);
+            window.saveGuildData(); 
+            window.renderGuildMembers();
         }
 
-        function addGuildMember() {
-            const input = document.getElementById('new-member-input');
-            const roleSelect = document.getElementById('new-member-role');
-            const name = input.value.trim();
-            const role = roleSelect.value;
-
-            if (!name) return;
-            
-            const activeData = guildDataByMonth[getActiveKey()];
-
-            // 중복 검사
-            if (activeData.find(m => m.name === name)) {
-                alert("이미 등록된 길드원입니다.");
-                return;
-            }
-
-            activeData.push({
-                id: 'guild_m_' + Date.now(),
-                name: name,
-                role: role,
-                isVerified: false // 기본값: 미인증
-            });
-            input.value = '';
-            renderGuildMembers();
-        }
-
-        function removeGuildMember(id) {
-            const key = getActiveKey();
-            guildDataByMonth[key] = guildDataByMonth[key].filter(m => m.id !== id);
-            renderGuildMembers();
-        }
-
-        function renderGuildMembers() {
-            ensureMonthData();
-            const activeData = guildDataByMonth[getActiveKey()];
+        window.renderGuildMembers = function() {
+            window.ensureMonthData();
+            const activeData = window.guildDataByMonth[window.getActiveKey()];
 
             const masterContainer = document.getElementById('guild-master-container');
             const adminContainer = document.getElementById('guild-admin-container');
             const memberContainer = document.getElementById('guild-member-container');
-            
             const unverifiedContainer = document.getElementById('unverified-container');
             const verifiedContainer = document.getElementById('verified-container');
             
@@ -965,80 +923,57 @@
             verifiedContainer.innerHTML = '';
 
             activeData.forEach(m => {
-                // 1. [길드인원 현황] 상단 태그 렌더링
                 const tag = document.createElement('div');
                 tag.className = `flex items-center gap-2 px-3 py-1.5 rounded font-bold text-sm shadow-sm transition-colors ${m.isVerified ? 'bg-zinc-700 text-gray-200' : 'bg-red-600 text-white border border-red-500/50'}`;
-                tag.innerHTML = `
-                    <span>${m.name}</span>
-                    <button onclick="removeGuildMember('${m.id}')" class="text-xs opacity-50 hover:opacity-100 focus:outline-none">✕</button>
-                `;
+                tag.innerHTML = `<span>${m.name}</span><button onclick="removeGuildMember('${m.id}')" class="text-xs opacity-50 hover:opacity-100 focus:outline-none">✕</button>`;
                 
                 if (m.role === 'master') masterContainer.appendChild(tag);
                 else if (m.role === 'admin') adminContainer.appendChild(tag);
                 else memberContainer.appendChild(tag);
 
-                // 2. [길드스킬 현황] 드래그 앤 드롭 아이템 렌더링
                 const dragItem = document.createElement('div');
                 dragItem.id = m.id;
                 dragItem.draggable = true;
-                dragItem.ondragstart = dragMember;
-                
+                dragItem.ondragstart = window.dragMember;
                 let roleIcon = m.role === 'master' ? '👑' : (m.role === 'admin' ? '🛡️' : '👤');
-
                 dragItem.className = "bg-[#242427] border border-zinc-600 hover:border-[#5b66f5] text-white p-3 rounded cursor-grab active:cursor-grabbing font-bold shadow transition-colors flex justify-between items-center group";
                 dragItem.innerHTML = `<span class="flex items-center gap-2"><span class="text-xs">${roleIcon}</span> ${m.name}</span><span class="text-xs text-zinc-500 group-hover:text-[#5b66f5]">:: 드래그</span>`;
                 
-                if (m.isVerified) {
-                    verifiedContainer.appendChild(dragItem);
-                } else {
-                    unverifiedContainer.appendChild(dragItem);
-                }
+                if (m.isVerified) verifiedContainer.appendChild(dragItem);
+                else unverifiedContainer.appendChild(dragItem);
             });
             
-            // 데이터가 비어있을 때 안내 메시지
             if (masterContainer.children.length === 0) masterContainer.innerHTML = '<span class="text-zinc-600 text-sm font-normal">-</span>';
             if (adminContainer.children.length === 0) adminContainer.innerHTML = '<span class="text-zinc-600 text-sm font-normal">-</span>';
             if (memberContainer.children.length === 0) memberContainer.innerHTML = '<span class="text-zinc-600 text-sm font-normal">-</span>';
-
             if (activeData.length === 0) {
                 unverifiedContainer.innerHTML = '<div class="text-center text-zinc-600 text-sm mt-8">인원을 추가해주세요</div>';
                 verifiedContainer.innerHTML = '<div class="text-center text-zinc-600 text-sm mt-8">인원을 추가해주세요</div>';
             }
         }
 
-        // 드래그 앤 드롭 이벤트 핸들러
-        function allowDrop(ev) {
-            ev.preventDefault();
-        }
-
-        function dragMember(ev) {
-            ev.dataTransfer.setData("memberId", ev.target.id);
-        }
-
-        function dropMember(ev, isVerifiedTarget) {
+        window.allowDrop = function(ev) { ev.preventDefault(); }
+        window.dragMember = function(ev) { ev.dataTransfer.setData("memberId", ev.target.id); }
+        window.dropMember = function(ev, isVerifiedTarget) {
             ev.preventDefault();
             const id = ev.dataTransfer.getData("memberId");
-            const activeData = guildDataByMonth[getActiveKey()];
+            const activeData = window.guildDataByMonth[window.getActiveKey()];
             const member = activeData.find(m => m.id === id);
             
             if (member && member.isVerified !== isVerifiedTarget) {
                 member.isVerified = isVerifiedTarget;
-                saveGuildData(); // 상태 변경(드래그앤드롭) 후 자동 저장
-                renderGuildMembers();
+                window.saveGuildData(); 
+                window.renderGuildMembers();
             }
         }
-
-        // 초기 구동
+        
+        // 윈도우 로드 초기화 구문
         window.onload = function() {
             renderParties();
             renderBossTimers();
             initFountain();
             calcDist();
-            
-            // 월별 데이터 초기화 및 렌더링
-            ensureMonthData();
-            document.getElementById('month-display').innerText = `${activeYear}년 ${activeMonth}월`;
-            renderGuildMembers(); 
+            document.getElementById('month-display').innerText = `${window.activeYear}년 ${window.activeMonth}월`;
         }
     </script>
 </body>
