@@ -3,474 +3,794 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>추억 길드 전용 유틸리티</title>
-    <!-- Tailwind CSS -->
+    <title>추억 길드 유틸리티</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 프리미엄 웹 폰트: Pretendard -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Pretendard', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            500: '#ef4444', /* 밝은 레드 */
-                            600: '#dc2626', /* 기본 레드 */
-                            900: '#7f1d1d', /* 다크 레드 */
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         body { 
-            background-color: #050505; /* 완전한 어두운 배경 */
-            color: #d4d4d8; 
+            font-family: 'Noto Sans KR', sans-serif; 
+            background-color: #1a1a1c; 
+            color: #e5e7eb;
+            overflow-y: scroll;
         }
+        .digital-font { font-family: 'Share Tech Mono', monospace; }
         
-        /* 탭 스위치 애니메이션 */
-        .tab-indicator { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* 탭 스위치 스타일 */
+        .tab-btn { position: relative; transition: all 0.2s ease; }
+        .tab-btn.active { color: #fff; font-weight: bold; background: rgba(91, 102, 245, 0.15); border-radius: 8px; border: 1px solid rgba(91, 102, 245, 0.3); }
         
-        /* 다크테마 전용 입력창 스타일 */
-        .premium-input {
-            background-color: #121212;
-            border: 1px solid #27272a;
-            color: #f4f4f5;
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1c; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* 타이머 입력창 리셋 */
+        input[type="text"].timer-input {
+            width: 160px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-bottom: 2px dashed #4b5563;
+            color: white;
+            outline: none;
             transition: all 0.2s;
         }
-        .premium-input:focus {
-            background-color: #000000;
-            border-color: #dc2626;
-            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
-            outline: none;
-        }
-        select.premium-input option {
-            background-color: #121212;
-            color: #f4f4f5;
-        }
-        
-        /* 커스텀 스크롤바 */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
-        
-        /* 최종결과 다크 레드 네온 스타일 */
-        .result-card {
-            background: #0a0a0a;
-            border: 1px solid #dc2626;
-            box-shadow: inset 0 0 20px rgba(220,38,38,0.05), 0 0 15px rgba(220,38,38,0.1);
-        }
-        .result-input {
-            background: transparent;
-            color: #ffffff;
-            border: none;
-            outline: none;
-            font-weight: 700;
+        input[type="text"].timer-input:focus { border-bottom-color: #5b66f5; }
+        input[type="text"].timer-input:disabled { border-bottom-color: transparent; opacity: 0.8; }
+
+        /* 셀렉트 화살표 숨기기 */
+        select.job-select, select.guess {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            text-align: center;
+            cursor: pointer;
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col relative overflow-x-hidden">
-
-    <!-- 1. 배경 은은한 레드 글로우 효과 -->
-    <div class="fixed inset-0 z-[-1] pointer-events-none">
-        <div class="absolute top-[20%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-900/10 rounded-full blur-[120px]"></div>
-    </div>
-
-    <!-- 2. 네비게이션 바 -->
-    <nav class="sticky top-0 z-50 bg-[#050505]/80 backdrop-blur-md border-b border-zinc-900 shadow-sm">
-        <div class="max-w-5xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="text-2xl font-extrabold tracking-tight flex items-center gap-3">
-                <span class="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">✨ 추억</span> 
-                <span class="text-lg font-medium text-zinc-600">| 길드 유틸리티</span>
+<body>
+    <nav class="bg-[#121213] border-b border-zinc-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-[1200px] mx-auto px-4 flex items-center justify-between h-16">
+            <div class="flex items-center gap-1.5 select-none">
+                <span class="text-xl drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">✨</span>
+                <span class="text-2xl font-black text-white tracking-wider drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]">추억</span>
+                <span class="text-sm font-medium text-zinc-500 ml-1.5 pb-0.5">| 길드 유틸리티</span>
             </div>
-            
-            <div class="relative flex p-1 bg-zinc-900 rounded-xl border border-zinc-800">
-                <button onclick="switchTab('fountain')" id="tab-fountain-btn" class="relative z-10 flex-1 px-6 py-2 text-sm font-bold rounded-lg transition-colors text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">
-                    🗿 현자의 분수
-                </button>
-                <button onclick="switchTab('distribute')" id="tab-distribute-btn" class="relative z-10 flex-1 px-6 py-2 text-sm font-bold rounded-lg transition-colors text-zinc-500 hover:text-zinc-300">
-                    💰 분배 계산기
-                </button>
-                <div id="tab-indicator" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-zinc-800 rounded-lg shadow-sm tab-indicator border border-zinc-700"></div>
+            <div class="flex gap-2">
+                <button onclick="switchTab('timer')" id="tab-timer-btn" class="tab-btn active px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">⏰ 보스 타이머</button>
+                <button onclick="switchTab('fountain')" id="tab-fountain-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">🗿 현자의 분수</button>
+                <button onclick="switchTab('distribute')" id="tab-distribute-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">💰 분배 계산기</button>
+                <button onclick="switchTab('member')" id="tab-member-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">👥 길드원 관리</button>
             </div>
         </div>
     </nav>
 
-    <!-- 3. 메인 콘텐츠 -->
-    <main class="flex-1 max-w-5xl mx-auto w-full p-6 my-4">
-
-        <!-- 3-1. 현자의 분수 시뮬레이터 탭 -->
-        <section id="fountain-section" class="bg-[#0a0a0a] rounded-2xl border border-red-900/50 shadow-[0_0_20px_rgba(220,38,38,0.03)] p-8 transition-opacity duration-300">
-            <header class="mb-8 border-b border-zinc-800 pb-4">
-                <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-red-600 rounded-full inline-block shadow-[0_0_8px_rgba(220,38,38,0.8)]"></span>현자의 분수 시뮬레이터
-                </h2>
-                <p class="text-zinc-500">길드 대항전 퍼즐의 경우의 수를 빠르게 계산하여 클리어 타임을 단축하세요.</p>
-            </header>
+    <main class="max-w-[1200px] mx-auto p-4 py-8">
+        
+        <!-- ========================================== -->
+        <!-- 1. 보스 타이머 탭 -->
+        <!-- ========================================== -->
+        <section id="timer-section" class="block">
             
-            <div class="bg-zinc-900 border border-zinc-800 text-zinc-400 p-4 rounded-xl text-sm mb-8 flex items-start gap-3">
-                <span class="text-xl opacity-80">💡</span>
-                <div>
-                    <strong class="block mb-1 text-white">빠른 클리어 팁</strong>
-                    처음에는 한 가지 아이템을 4개 모두 뿌려보세요. <br>
-                    예를 들어 훈장 4개를 뿌렸는데 <strong class="text-red-400">"모른다"가 4개</strong> 나왔다면 정답 조합에 훈장은 아예 없는 것입니다!
+            <!-- 레이드 시간 헤더 -->
+            <div class="flex items-center justify-center gap-4 mb-10">
+                <div class="text-zinc-400 text-sm">레이드 진행시간</div>
+                <div class="digital-font text-5xl font-bold tracking-widest text-white" id="raid-time-display">00:00:00</div>
+                <button onclick="toggleRaid()" id="raid-btn" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-5 py-2 rounded font-bold transition-colors shadow-lg">시작</button>
+                <button onclick="resetRaid()" class="bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded font-bold transition-colors shadow-lg">초기화</button>
+            </div>
+
+            <!-- 파티 관리 -->
+            <div class="mb-12">
+                <div class="flex items-end justify-between mb-4 px-1">
+                    <h2 class="text-xl font-bold text-white">원정대 관리 <span class="text-sm font-normal text-zinc-400 ml-2">총 <span id="total-members" class="text-white">0</span>명 · <span class="text-red-400">사망 <span id="dead-members">0</span>명</span></span></h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3" id="parties-container">
+                    <!-- JS로 동적 생성 -->
                 </div>
             </div>
 
-            <div class="mb-8">
-                <label class="block text-sm font-bold text-zinc-500 mb-3">1. 바친 제물을 순서대로 선택하세요</label>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <select class="guess premium-input rounded-xl px-4 py-3 text-center cursor-pointer font-medium"><option value="훈장">🏅 훈장</option><option value="두루마리">📜 두루마리</option><option value="음식">🍖 음식</option><option value="와인">🍷 와인</option></select>
-                    <select class="guess premium-input rounded-xl px-4 py-3 text-center cursor-pointer font-medium"><option value="훈장">🏅 훈장</option><option value="두루마리">📜 두루마리</option><option value="음식">🍖 음식</option><option value="와인">🍷 와인</option></select>
-                    <select class="guess premium-input rounded-xl px-4 py-3 text-center cursor-pointer font-medium"><option value="훈장">🏅 훈장</option><option value="두루마리">📜 두루마리</option><option value="음식">🍖 음식</option><option value="와인">🍷 와인</option></select>
-                    <select class="guess premium-input rounded-xl px-4 py-3 text-center cursor-pointer font-medium"><option value="훈장">🏅 훈장</option><option value="두루마리">📜 두루마리</option><option value="음식">🍖 음식</option><option value="와인">🍷 와인</option></select>
-                </div>
+            <!-- 보스 타이머 레이아웃 -->
+            <div id="boss-timers-container" class="space-y-8">
+                <!-- JS로 동적 생성 -->
             </div>
 
-            <div class="bg-[#121212] border border-zinc-800 rounded-xl p-6 mb-6">
-                <label class="block text-sm font-bold text-zinc-500 mb-4">2. NPC가 알려준 멘트 개수를 똑같이 입력하세요 (총합 4 고정)</label>
-                <div class="flex flex-wrap gap-4 sm:gap-8 items-center justify-center sm:justify-start">
-                    <div class="flex items-center gap-3 bg-zinc-950 px-4 py-2 rounded-lg border border-zinc-800">
-                        <span class="text-blue-400 font-bold">⭕ 맞습니다</span>
-                        <input type="number" id="exact" min="0" max="4" value="0" class="premium-input w-16 text-center text-lg rounded-md font-bold">
-                    </div>
-                    <div class="flex items-center gap-3 bg-zinc-950 px-4 py-2 rounded-lg border border-zinc-800">
-                        <span class="text-orange-400 font-bold">🔺 틀리다</span>
-                        <input type="number" id="partial" min="0" max="4" value="0" class="premium-input w-16 text-center text-lg rounded-md font-bold">
-                    </div>
-                    <div class="flex items-center gap-3 bg-zinc-950 px-4 py-2 rounded-lg border border-zinc-800">
-                        <span class="text-red-500 font-bold">❌ 모른다</span>
-                        <input type="number" id="none" min="0" max="4" value="0" class="premium-input w-16 text-center text-lg rounded-md font-bold">
+        </section>
+
+        <!-- ========================================== -->
+        <!-- 2. 현자의 분수 탭 -->
+        <!-- ========================================== -->
+        <section id="fountain-section" class="hidden max-w-2xl mx-auto">
+            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">🗿 현자의 분수 시뮬레이터</h2>
+                
+                <div class="bg-blue-500/10 border border-blue-500/30 text-blue-200 p-4 rounded-lg text-sm mb-8">
+                    <strong>💡 팁:</strong> 처음에 훈장 4개를 뿌렸는데 <strong>"모른다 4개"</strong>가 나오면 훈장은 정답에 아예 없는 것입니다!
+                </div>
+
+                <div class="mb-8">
+                    <strong class="block mb-3 text-zinc-300 text-sm">1. 바친 제물 세팅:</strong>
+                    <div class="flex gap-2">
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
                     </div>
                 </div>
-                <p id="fountain-error" class="hidden mt-4 text-red-400 font-bold text-sm bg-red-950/40 p-3 rounded-lg border border-red-900/50"></p>
-            </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                <button onclick="submitGuess()" class="flex-[3] bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_20px_rgba(220,38,38,0.5)] transform hover:-translate-y-0.5 transition-all border border-red-500">
-                    결과 입력 및 경우의 수 압축하기
-                </button>
-                <button onclick="resetSimulator()" class="flex-1 bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 text-zinc-300 font-bold py-4 px-6 rounded-xl transition-all">
-                    초기화
-                </button>
-            </div>
-
-            <div class="bg-[#121212] border border-zinc-800 rounded-xl overflow-hidden shadow-inner">
-                <div class="bg-zinc-950 border-b border-zinc-800 p-4 flex justify-between items-center">
-                    <h3 class="font-bold text-zinc-400">남은 경우의 수: <span id="count" class="text-red-500 text-xl mx-1 drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]">256</span>개</h3>
-                    <div class="text-sm font-medium text-zinc-400 bg-[#121212] px-3 py-1 rounded-full border border-zinc-800">
-                        추천 배치: <span id="recommendation" class="text-white font-bold ml-1">-</span>
+                <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg mb-6">
+                    <strong class="block mb-4 text-zinc-300 text-sm">2. NPC가 알려준 멘트 개수 입력:</strong>
+                    <div class="flex justify-between gap-4">
+                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm">
+                            <span class="text-blue-400">⭕ 맞습니다</span>
+                            <input type="number" id="exact" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none focus:border-[#5b66f5] transition-colors">
+                        </label>
+                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm">
+                            <span class="text-orange-400">🔺 틀리다</span>
+                            <input type="number" id="partial" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none focus:border-[#5b66f5] transition-colors">
+                        </label>
+                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm">
+                            <span class="text-red-400">❌ 모른다</span>
+                            <input type="number" id="none" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none focus:border-[#5b66f5] transition-colors">
+                        </label>
                     </div>
                 </div>
-                <div id="remaining-list" class="p-4 text-sm text-zinc-500 leading-relaxed grid grid-cols-1 sm:grid-cols-2 gap-2 h-64 overflow-y-auto"></div>
+
+                <div id="fountain-error" class="hidden text-red-400 text-sm font-bold text-center mb-4 bg-red-500/10 border border-red-500/20 p-2 rounded"></div>
+
+                <div class="flex gap-3 mb-8">
+                    <button onclick="submitGuess()" class="flex-1 bg-[#5b66f5] hover:bg-[#4f58d9] text-white font-bold py-3 px-4 rounded transition-colors shadow-lg">결과 입력 및 추리기</button>
+                    <button onclick="resetFountain()" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 px-6 rounded transition-colors">초기화</button>
+                </div>
+
+                <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg text-center">
+                    <h3 class="text-zinc-400 mb-2 font-bold">남은 경우의 수: <span id="count" class="text-[#5b66f5] font-black text-xl">256</span>개</h3>
+                    <p class="mb-4 text-sm text-zinc-300">추천 다음 세팅: <span id="recommendation" class="font-bold text-[#5b66f5] text-base">-</span></p>
+                    <div id="remaining-list" class="bg-[#242427] border border-zinc-700 p-3 rounded text-sm text-zinc-400 max-h-[150px] overflow-y-auto text-left"></div>
+                </div>
             </div>
         </section>
 
-        <!-- 3-2. 분배 계산기 탭 -->
-        <section id="distribute-section" class="bg-[#0a0a0a] rounded-2xl border border-zinc-800 shadow-[0_0_20px_rgba(0,0,0,0.5)] p-8 hidden transition-opacity duration-300">
-            <header class="mb-8 flex justify-between items-end border-b border-zinc-800 pb-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-                        <span class="w-2 h-6 bg-zinc-600 rounded-full inline-block"></span>💰 보스/아이템 분배 계산기
-                    </h2>
-                    <p class="text-zinc-500">복잡한 수수료와 가위값을 제외한 정확한 분배금을 즉시 계산합니다.</p>
-                </div>
-                <button onclick="resetDist()" class="hidden sm:flex text-sm text-zinc-500 hover:text-white transition-colors items-center gap-1 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-700">
-                    <span>초기화</span>
-                </button>
-            </header>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <!-- ========================================== -->
+        <!-- 3. 분배 계산기 탭 -->
+        <!-- ========================================== -->
+        <section id="distribute-section" class="hidden max-w-4xl mx-auto">
+            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                <h2 class="text-xl font-bold mb-8 text-white flex items-center gap-2">💰 보스 리워드 분배기</h2>
                 
-                <!-- 입력부 -->
-                <div class="lg:col-span-7 space-y-6">
-                    <div class="bg-[#121212] p-6 rounded-2xl border border-zinc-800 space-y-5">
-                        
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-5">
+                        <h3 class="font-bold text-zinc-300 border-b border-zinc-700 pb-2 text-sm">세팅 (수정 가능)</h3>
                         <div>
-                            <label class="block text-sm font-bold text-zinc-500 mb-2">판매 금액</label>
-                            <div class="relative">
-                                <input type="text" id="dist-sales" placeholder="예: 5,000,000,000" class="premium-input w-full text-right text-lg py-3 px-12 font-bold text-white rounded-xl">
-                                <span class="absolute right-4 top-3.5 text-zinc-600 font-medium select-none">메소</span>
+                            <label class="block text-sm text-zinc-400 mb-1">판매 금액 (메소)</label>
+                            <input type="text" id="dist-sales" placeholder="100,000,000" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-zinc-400 mb-1">가위값 공제 (메소)</label>
+                            <input type="text" id="dist-scissors" value="0" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <label class="block text-sm text-zinc-400 mb-1">경매장 수수료 (%)</label>
+                                <input type="number" id="dist-fee" value="10" min="0" max="100" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm text-zinc-400 mb-1">분배 인원 (명)</label>
+                                <input type="number" id="dist-people" value="6" min="1" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
                             </div>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-zinc-500 mb-2">가위값 (선공제)</label>
-                                <div class="relative">
-                                    <input type="text" id="dist-scissor" value="0" class="premium-input w-full text-right py-2.5 px-10 rounded-xl">
-                                    <span class="absolute right-3 top-3 text-zinc-600 text-sm select-none">메소</span>
-                                </div>
+                        <div class="flex gap-4">
+                            <div class="flex-1">
+                                <label class="block text-sm text-zinc-400 mb-1">택배 수수료 (%)</label>
+                                <input type="number" id="dist-mail-percent" value="8" min="0" max="100" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
                             </div>
-                            <div>
-                                <label class="block text-sm font-bold text-zinc-500 mb-2">경매장 수수료</label>
-                                <div class="relative">
-                                    <input type="number" id="dist-fee" value="10" min="0" max="100" class="premium-input w-full text-right py-2.5 px-10 rounded-xl text-red-400 font-bold">
-                                    <span class="absolute right-3 top-3 text-zinc-600 text-sm select-none">%</span>
-                                </div>
+                            <div class="flex-1">
+                                <label class="block text-sm text-zinc-400 mb-1">택배비 (건당 메소)</label>
+                                <input type="text" id="dist-mail-fixed" value="10,000" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
                             </div>
                         </div>
-
-                        <div class="border-t border-zinc-800 pt-5 mt-2">
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div>
-                                    <label class="block text-sm font-bold text-zinc-500 mb-2">분배 인원</label>
-                                    <div class="relative">
-                                        <input type="number" id="dist-people" value="6" min="1" class="premium-input w-full text-right py-2.5 px-8 rounded-xl font-bold">
-                                        <span class="absolute right-3 top-3 text-zinc-600 text-sm select-none">명</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-zinc-500 mb-2">택배비 (%)</label>
-                                    <div class="relative">
-                                        <input type="number" id="dist-mail-percent" value="8" min="0" max="100" class="premium-input w-full text-right py-2.5 px-8 rounded-xl text-red-400 font-bold">
-                                        <span class="absolute right-3 top-3 text-zinc-600 text-sm select-none">%</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-zinc-500 mb-2">건당 택배비</label>
-                                    <div class="relative">
-                                        <input type="text" id="dist-mail-flat" value="10,000" class="premium-input w-full text-right py-2.5 px-8 rounded-xl">
-                                        <span class="absolute right-3 top-3 text-zinc-600 text-sm select-none">메소</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                    
-                    <div class="sm:hidden mt-4 flex justify-end">
-                        <button onclick="resetDist()" class="text-sm text-zinc-600 underline">내용 지우기</button>
+
+                    <div class="space-y-5">
+                        <h3 class="font-bold text-zinc-300 border-b border-zinc-700 pb-2 text-sm">최종 결과 (자동 계산)</h3>
+                        
+                        <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg">
+                            <label class="block text-sm text-zinc-400 mb-2">1인당 기본 분배금 <span class="text-xs text-zinc-500">(가위값·경매장수수료 공제)</span></label>
+                            <div class="flex items-center justify-end gap-2">
+                                <input type="text" id="dist-result" value="0" readonly tabindex="-1" class="w-full bg-transparent text-[#5b66f5] text-right text-2xl font-bold outline-none cursor-default">
+                                <span class="text-zinc-500 font-bold">메소</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-[#1a1a1c] border border-[#5b66f5]/30 p-5 rounded-lg shadow-[0_0_15px_rgba(91,102,245,0.1)]">
+                            <label class="block text-sm text-[#5b66f5] font-bold mb-2">최종 실수령액 <span class="text-xs text-[#5b66f5]/70">(택배비 모두 차감)</span></label>
+                            <div class="flex items-center justify-end gap-2">
+                                <input type="text" id="dist-final" value="0" readonly tabindex="-1" class="w-full bg-transparent text-white text-right text-3xl font-black outline-none cursor-default">
+                                <span class="text-zinc-400 font-bold">메소</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right mt-2">
+                            <button onclick="resetDist()" class="text-sm text-zinc-500 hover:text-white underline transition-colors">내용 모두 지우기</button>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- 결과부 -->
-                <div class="lg:col-span-5 flex flex-col gap-4">
-                    
-                    <div class="bg-[#121212] border border-zinc-800 rounded-2xl p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <label class="text-sm font-bold text-zinc-500 flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-zinc-600"></div> 1인당 기본 결과값
-                            </label>
-                            <span class="text-xs text-zinc-600 bg-zinc-900 px-2 py-1 rounded-md border border-zinc-800">수수료/가위값 제외</span>
-                        </div>
-                        <div class="relative flex items-baseline justify-end gap-1">
-                            <input type="text" id="dist-result" value="0" readonly tabindex="-1" class="w-full bg-transparent text-right text-3xl font-bold text-zinc-300 outline-none border-none cursor-default">
-                            <span class="text-zinc-600 font-medium">메소</span>
-                        </div>
-                    </div>
+        <!-- ========================================== -->
+        <!-- 4. 길드원 관리 탭 -->
+        <!-- ========================================== -->
+        <section id="member-section" class="hidden max-w-5xl mx-auto space-y-8">
+            
+            <!-- 비밀번호 잠금 화면 -->
+            <div id="member-lock-screen" class="bg-[#242427] rounded-xl border border-zinc-700 p-10 text-center shadow-lg max-w-md mx-auto mt-20">
+                <div class="text-5xl mb-4">🔒</div>
+                <h2 class="text-xl font-bold text-white mb-2">운영진 전용 메뉴</h2>
+                <p class="text-zinc-400 text-sm mb-6">해당 기능은 운영진만 접근할 수 있습니다.</p>
+                <input type="password" id="member-password" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] mb-4 text-center font-bold tracking-widest" placeholder="비밀번호 입력" onkeypress="if(event.key==='Enter') unlockMemberTab()">
+                <div id="password-error" class="text-red-400 text-sm font-bold mb-4 hidden bg-red-500/10 border border-red-500/20 py-2 rounded">비밀번호가 일치하지 않습니다.</div>
+                <button onclick="unlockMemberTab()" class="w-full bg-[#5b66f5] hover:bg-[#4f58d9] text-white py-3 rounded font-bold transition-colors shadow-lg">잠금 해제</button>
+            </div>
 
-                    <div class="result-card rounded-2xl p-6 flex-1 flex flex-col justify-center relative overflow-hidden">
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-center mb-6">
-                                <label class="text-sm font-bold text-red-400 flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]"></div> 최종 실수령액
-                                </label>
-                                <span class="text-xs text-zinc-400 bg-zinc-950 px-2 py-1 rounded-md border border-red-900/50">택배 발송 기준</span>
-                            </div>
-                            <div class="relative flex items-baseline justify-end gap-2 border-b border-red-900/40 pb-4 mb-4">
-                                <input type="text" id="dist-final" value="0" readonly tabindex="-1" class="w-full result-input text-right text-4xl sm:text-5xl tracking-tight drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]">
-                            </div>
-                            <div class="text-right text-xs text-zinc-600 leading-relaxed">
-                                (판매금액 - 수수료) - 가위값을 인원수로 나눈 뒤,<br>
-                                개인별 택배 수수료와 건당 택배비를 제한 최종 금액입니다.
-                            </div>
-                        </div>
-                    </div>
+            <!-- 실제 길드원 관리 콘텐츠 (초기 숨김) -->
+            <div id="member-content" class="hidden space-y-8">
 
+            <!-- 연월 네비게이션 -->
+            <div class="flex justify-between items-center bg-[#242427] border border-zinc-700 p-4 rounded-xl shadow-lg">
+                <button onclick="changeMonth(-1)" class="bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded font-bold transition-colors shadow">◀ 이전 달</button>
+                <h2 class="text-2xl font-black text-white tracking-widest" id="month-display">2026년 9월</h2>
+                <button onclick="changeMonth(1)" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-5 py-2 rounded font-bold transition-colors shadow">다음 달 ▶</button>
+            </div>
+
+            <!-- 4-1. 길드인원 현황 -->
+            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">👥 길드인원 현황</h2>
+                
+                <div class="flex gap-3 mb-6">
+                    <select id="new-member-role" class="bg-[#1a1a1c] border border-zinc-600 text-white px-4 py-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold cursor-pointer">
+                        <option value="member">👤 길드원</option>
+                        <option value="admin">🛡️ 운영진</option>
+                        <option value="master">👑 길드장</option>
+                    </select>
+                    <input type="text" id="new-member-input" placeholder="추가할 길드원 닉네임 입력 (Enter로 추가 가능)" class="flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors" onkeypress="if(event.key==='Enter') addGuildMember()">
+                    <button onclick="addGuildMember()" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-6 py-3 rounded font-bold transition-colors shadow-lg">인원 추가</button>
                 </div>
+
+                <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg min-h-[120px] space-y-6">
+                    
+                    <!-- 직급별 그룹 렌더링 -->
+                    <div>
+                        <h3 class="text-yellow-400 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">👑 길드장</h3>
+                        <div id="guild-master-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-blue-400 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">🛡️ 운영진</h3>
+                        <div id="guild-admin-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-zinc-300 font-bold mb-3 text-sm flex items-center gap-1 border-b border-zinc-800 pb-2">👤 길드원</h3>
+                        <div id="guild-member-container" class="flex flex-wrap gap-2 min-h-[30px]"></div>
+                    </div>
+
+                    <div class="mt-2 border-t border-zinc-700 pt-4">
+                        <p class="text-xs text-zinc-400">※ 길드스킬 <span class="bg-red-600 text-white px-1.5 py-0.5 rounded font-bold">미인증</span> 상태인 길드원은 명단에서 붉은색으로 표시됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4-2. 길드스킬 현황 (드래그 앤 드롭) -->
+            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                <h2 class="text-xl font-bold mb-2 text-white flex items-center gap-2">✨ 길드스킬 현황</h2>
+                <p class="text-sm text-zinc-400 mb-6">아래 이름표를 마우스로 끌어서(Drag & Drop) 인증 상태를 변경하세요.</p>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- 미인증 영역 -->
+                    <div class="bg-[#1a1a1c] border-2 border-dashed border-red-500/30 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, false)" ondragover="allowDrop(event)">
+                        <h3 class="text-red-400 font-bold mb-4 text-center border-b border-red-500/20 pb-2">❌ 미인증</h3>
+                        <div id="unverified-container" class="flex-1 flex flex-col gap-2">
+                            <!-- 드래그 아이템이 배치되는 곳 -->
+                        </div>
+                    </div>
+
+                    <!-- 인증 완료 영역 -->
+                    <div class="bg-[#1a1a1c] border-2 border-dashed border-[#5b66f5]/40 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, true)" ondragover="allowDrop(event)">
+                        <h3 class="text-[#5b66f5] font-bold mb-4 text-center border-b border-[#5b66f5]/20 pb-2">✅ 인증 완료</h3>
+                        <div id="verified-container" class="flex-1 flex flex-col gap-2">
+                            <!-- 드래그 아이템이 배치되는 곳 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </div>
         </section>
 
     </main>
 
     <script>
-        function switchTab(tabName) {
-            const fBtn = document.getElementById('tab-fountain-btn');
-            const dBtn = document.getElementById('tab-distribute-btn');
-            const indicator = document.getElementById('tab-indicator');
+        // ==========================================
+        // 글로벌 및 공통 기능
+        // ==========================================
+        let audioCtx = null;
+        function playBeep() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             
-            const fSection = document.getElementById('fountain-section');
-            const dSection = document.getElementById('distribute-section');
+            let count = 0;
+            let interval = setInterval(() => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+                osc.stop(audioCtx.currentTime + 0.1);
+                
+                count++;
+                if(count >= 3) clearInterval(interval);
+            }, 150);
+        }
 
-            if (tabName === 'fountain') {
-                indicator.style.transform = 'translateX(0)';
-                fBtn.classList.replace('text-zinc-500', 'text-white');
-                fBtn.classList.add('drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]');
+        function switchTab(tab) {
+            ['timer', 'fountain', 'distribute', 'member'].forEach(t => {
+                document.getElementById(`tab-${t}-btn`).classList.remove('active', 'text-[#5b66f5]');
+                document.getElementById(`tab-${t}-btn`).classList.add('text-gray-400');
+                document.getElementById(`${t}-section`).classList.add('hidden');
+                document.getElementById(`${t}-section`).classList.remove('block');
+            });
+            document.getElementById(`tab-${tab}-btn`).classList.add('active', 'text-[#5b66f5]');
+            document.getElementById(`tab-${tab}-btn`).classList.remove('text-gray-400');
+            document.getElementById(`${tab}-section`).classList.remove('hidden');
+            document.getElementById(`${tab}-section`).classList.add('block');
+        }
+
+        function formatTime(secs) {
+            if(secs < 0) secs = 0;
+            const h = Math.floor(secs / 3600);
+            const m = Math.floor((secs % 3600) / 60);
+            const s = secs % 60;
+            if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        // ==========================================
+        // 1. 보스 타이머 및 파티 관리
+        // ==========================================
+        let mainInterval = null;
+        let isRaidRunning = false;
+        let raidSeconds = 0;
+
+        // 파티 데이터 (사망 10분 = 600초, 부활 30분 = 1800초)
+        let partiesData = Array(5).fill().map((_, i) => [
+            { id: `p${i}m0`, name: `파티원1`, job: '비숍', isDead: false, deathTime: 600, deathCurrent: 0, isRes: false, resTime: 1800, resCurrent: 0 }
+        ]);
+        let addingToParty = -1;
+
+        const timerConfig = [
+            { type: 'divider', title: '⚔️ 공무' },
+            { id: 't1', title: '좌머리 공무', time: 45, icon: '⚔️', group: 'row1' },
+            { id: 't2', title: '중머리 공무', time: 45, icon: '⚔️', group: 'row1' },
+            { id: 't3', title: '우머리 공무', time: 45, icon: '⚔️', group: 'row1' },
+            
+            { type: 'divider', title: '📿 버프해제' },
+            { id: 't4', title: '중머리 5갈', time: 300, icon: '📿', group: 'row2' },
+            { id: 't5', title: '중머리 3갈', time: 180, icon: '📿', group: 'row2' },
+            { id: 't6', title: '좌팔 (HP:60%)', time: 300, icon: '📿', group: 'row2' },
+            
+            { type: 'divider', title: '🪆 유혹담당' },
+            { id: 't7', title: '첫 개인 유혹', time: 120, icon: '🪆', group: 'row3', editable: true },
+            { id: 't8', title: '개인 유혹 (좌팔)', time: 180, icon: '🪆', group: 'row3', editable: true },
+            { id: 't9', title: '개인 유혹 (우팔)', time: 180, icon: '🪆', group: 'row3', editable: true },
+            { id: 't10', title: '단체 유혹', time: 60, icon: '🪆', group: 'row4', editable: true },
+            { id: 't11', title: '위협', time: 60, icon: '👻', group: 'row4', editable: true },
+
+            { type: 'divider', title: '🛡️ 공격반사' },
+            { id: 't12', title: '공반', time: 60, icon: '🛡️', group: 'row5', editable: true },
+            { id: 't13', title: '공반', time: 60, icon: '🛡️', group: 'row5', editable: true },
+        ];
+        let timers = {};
+
+        function getJobColor(job) {
+            const colors = { '비숍': 'bg-green-600', '나로': 'bg-blue-600', '히어로': 'bg-red-600', '팔라딘': 'bg-orange-600', '보마': 'bg-yellow-600', '신궁': 'bg-yellow-500', '캡틴': 'bg-indigo-600', '바이퍼': 'bg-purple-600', '손님': 'bg-gray-600' };
+            return colors[job] || 'bg-gray-600';
+        }
+
+        // 파티 렌더링
+        function renderParties() {
+            const container = document.getElementById('parties-container');
+            let total = 0, dead = 0;
+            let html = '';
+
+            partiesData.forEach((p, pIdx) => {
+                total += p.length;
+                dead += p.filter(m => m.isDead).length;
                 
-                dBtn.classList.replace('text-white', 'text-zinc-500');
-                dBtn.classList.remove('drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]');
+                html += `<div class="bg-[#1c1c1f] rounded-xl border border-zinc-700 flex flex-col h-[320px] overflow-hidden">
+                    <div class="bg-[#242427] px-3 py-2 border-b border-zinc-700 flex justify-between items-center">
+                        <span class="font-bold text-sm text-white">${pIdx + 1}파티 <span class="text-zinc-500 text-xs">${p.length}/6</span></span>
+                    </div>
+                    <div class="p-2 flex-1 overflow-y-auto space-y-2">`;
                 
-                fSection.classList.remove('hidden');
-                setTimeout(() => {
-                    fSection.style.opacity = 1;
-                    dSection.style.opacity = 0;
-                }, 10);
-                setTimeout(() => dSection.classList.add('hidden'), 300);
+                p.forEach((m, mIdx) => {
+                    html += `
+                        <div class="bg-[#242427] p-2 rounded border border-zinc-600/50 group relative">
+                            <div class="flex items-center gap-1.5 mb-2">
+                                <select onchange="updateJob(${pIdx}, ${mIdx}, this.value)" class="text-[10px] font-bold px-1.5 py-0.5 rounded text-white job-select cursor-pointer outline-none ${getJobColor(m.job)}">
+                                    <option value="비숍" ${m.job==='비숍'?'selected':''}>비숍</option>
+                                    <option value="나로" ${m.job==='나로'?'selected':''}>나로</option>
+                                    <option value="히어로" ${m.job==='히어로'?'selected':''}>히어로</option>
+                                    <option value="팔라딘" ${m.job==='팔라딘'?'selected':''}>팔라딘</option>
+                                    <option value="보마" ${m.job==='보마'?'selected':''}>보마</option>
+                                    <option value="신궁" ${m.job==='신궁'?'selected':''}>신궁</option>
+                                    <option value="캡틴" ${m.job==='캡틴'?'selected':''}>캡틴</option>
+                                    <option value="바이퍼" ${m.job==='바이퍼'?'selected':''}>바이퍼</option>
+                                    <option value="손님" ${m.job==='손님'?'selected':''}>손님</option>
+                                </select>
+                                <input type="text" onchange="updateName(${pIdx}, ${mIdx}, this.value)" value="${m.name}" class="bg-transparent text-sm font-bold border-b border-transparent hover:border-zinc-500 focus:border-[#5b66f5] outline-none w-full truncate ${m.isDead ? 'text-red-400' : 'text-gray-200'}">
+                                <button onclick="removeMember(${pIdx}, ${mIdx})" class="text-xs text-red-500 opacity-0 group-hover:opacity-100 absolute right-2 top-2">✕</button>
+                            </div>
+                            
+                            <button onclick="toggleDeath(${pIdx}, ${mIdx})" class="w-full flex justify-between items-center p-1.5 rounded text-xs font-bold mb-1 transition-colors ${m.isDead ? 'bg-zinc-800 text-red-400 border border-red-500/30' : 'bg-[#1a1a1c] hover:bg-zinc-700 text-zinc-400'}">
+                                <span>👻 사망 (10분)</span>
+                                ${m.isDead ? `<span class="digital-font text-base">${formatTime(m.deathCurrent)}</span>` : ''}
+                            </button>
+                            
+                            <button onclick="toggleRes(${pIdx}, ${mIdx})" class="w-full flex justify-between items-center p-1.5 rounded text-xs font-bold transition-colors ${m.isRes ? 'bg-zinc-800 text-orange-300 border border-orange-500/30' : 'bg-[#1a1a1c] hover:bg-zinc-700 text-zinc-400'}">
+                                <span>👼 리저 (30분)</span>
+                                ${m.isRes ? `<span class="digital-font text-base">${formatTime(m.resCurrent)}</span>` : ''}
+                            </button>
+                        </div>
+                    `;
+                });
+
+                if (addingToParty === pIdx) {
+                    html += `
+                        <div class="bg-[#242427] p-2 rounded border border-[#5b66f5]/50">
+                            <div class="flex gap-1 mb-2">
+                                <select id="add-job-${pIdx}" class="text-xs bg-[#1a1a1c] text-white p-1 rounded outline-none border border-zinc-600">
+                                    <option value="비숍">비숍</option>
+                                    <option value="나로">나로</option>
+                                    <option value="히어로">히어로</option>
+                                    <option value="팔라딘">팔라딘</option>
+                                    <option value="보마">보마</option>
+                                    <option value="신궁">신궁</option>
+                                    <option value="캡틴">캡틴</option>
+                                    <option value="바이퍼">바이퍼</option>
+                                    <option value="손님">손님</option>
+                                </select>
+                                <input type="text" id="add-name-${pIdx}" placeholder="이름" class="text-xs bg-[#1a1a1c] text-white p-1 rounded outline-none border border-zinc-600 w-full">
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="addingToParty = -1; renderParties()" class="flex-1 bg-zinc-600 hover:bg-zinc-500 text-xs py-1 rounded text-white">취소</button>
+                                <button onclick="confirmAddMember(${pIdx})" class="flex-1 bg-[#5b66f5] hover:bg-[#4f58d9] text-xs py-1 rounded text-white">추가</button>
+                            </div>
+                        </div>
+                    `;
+                } else if (p.length < 6) {
+                    html += `<button onclick="addingToParty = ${pIdx}; renderParties()" class="w-full py-2 border border-dashed border-zinc-600 hover:border-zinc-400 text-zinc-400 hover:text-zinc-200 rounded text-xs transition-colors">+ 파티원 추가</button>`;
+                }
+                
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('total-members').innerText = total;
+            document.getElementById('dead-members').innerText = dead;
+        }
+
+        // 파티원 로직
+        function updateJob(pIdx, mIdx, val) { partiesData[pIdx][mIdx].job = val; renderParties(); }
+        function updateName(pIdx, mIdx, val) { partiesData[pIdx][mIdx].name = val; renderParties(); }
+        function removeMember(pIdx, mIdx) { partiesData[pIdx].splice(mIdx, 1); renderParties(); }
+        function confirmAddMember(pIdx) {
+            const job = document.getElementById(`add-job-${pIdx}`).value;
+            const name = document.getElementById(`add-name-${pIdx}`).value.trim() || '이름없음';
+            partiesData[pIdx].push({ id: `p${pIdx}m${Date.now()}`, name, job, isDead: false, deathTime: 600, deathCurrent: 0, isRes: false, resTime: 1800, resCurrent: 0 });
+            addingToParty = -1; renderParties();
+        }
+        function toggleDeath(pIdx, mIdx) {
+            const m = partiesData[pIdx][mIdx];
+            if(m.isDead) { m.isDead = false; m.deathCurrent = 0; } else { m.isDead = true; m.deathCurrent = m.deathTime; }
+            renderParties();
+        }
+        function toggleRes(pIdx, mIdx) {
+            const m = partiesData[pIdx][mIdx];
+            if(m.isRes) { m.isRes = false; m.resCurrent = 0; } else { m.isRes = true; m.resCurrent = m.resTime; }
+            renderParties();
+        }
+
+        function renderBossTimers() {
+            const container = document.getElementById('boss-timers-container');
+            let html = '';
+            let isGridOpen = false;
+            
+            timerConfig.forEach(item => {
+                if(item.type === 'divider') {
+                    if (isGridOpen) html += `</div>`;
+                    html += `<div class="text-center font-bold text-xl text-white my-6 mt-10 tracking-widest">${item.title}</div>`;
+                    html += `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">`;
+                    isGridOpen = true;
+                } else {
+                    if(!timers[item.id]) { timers[item.id] = { ...item, current: item.time, isRunning: false, isMuted: false }; }
+                    const t = timers[item.id];
+                    
+                    const displayEl = t.editable 
+                        ? `<input type="text" id="display-${t.id}" value="${formatTime(t.time)}" class="timer-input digital-font text-5xl font-bold text-white z-10 relative bg-transparent" onchange="editTime('${t.id}', this.value)" onclick="this.select()">`
+                        : `<div id="display-${t.id}" class="digital-font text-5xl font-bold text-white z-10 relative cursor-default">${formatTime(t.current)}</div>`;
+
+                    html += `
+                        <div class="bg-[#242427] border border-zinc-700 rounded-xl h-[100px] flex overflow-hidden relative shadow-lg group">
+                            <div id="progress-${t.id}" class="absolute top-0 left-0 bottom-0 bg-[#5b66f5]/20 transition-all duration-1000 ease-linear" style="width: 100%;"></div>
+                            <div id="flash-${t.id}" class="absolute inset-0 bg-red-500/30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+                            
+                            <div class="flex-1 flex flex-col justify-center items-center p-3 relative z-10">
+                                <div class="w-full flex justify-between items-center text-zinc-400 text-sm font-bold mb-1 px-2">
+                                    <span class="flex items-center gap-1.5">${t.icon} ${t.title}</span>
+                                    <button onclick="toggleMute('${t.id}')" class="hover:text-white"><span id="mute-icon-${t.id}">${t.isMuted ? '🔇' : '🔊'}</span></button>
+                                </div>
+                                ${displayEl}
+                            </div>
+                            <button id="btn-${t.id}" onclick="toggleTimer('${t.id}')" class="w-[90px] bg-[#5b66f5] hover:bg-[#4f58d9] text-white font-bold text-lg transition-colors z-10 shadow-[-5px_0_15px_rgba(0,0,0,0.2)]">시작</button>
+                        </div>
+                    `;
+                }
+            });
+            if (isGridOpen) html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // 숫자 클릭하여 시간 수정
+        function editTime(id, val) {
+            let parts = val.split(':');
+            let secs = 0;
+            if(parts.length >= 2) secs = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            else secs = parseInt(parts[0]);
+            
+            if(isNaN(secs) || secs < 0) secs = timers[id].time; 
+            timers[id].time = secs;
+            timers[id].current = secs;
+            timers[id].isRunning = false;
+            updateTimerUI(id);
+        }
+
+        // **정지 버튼 = 원래 설정한 시간으로 완전 초기화(리셋)**
+        function toggleTimer(id) {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+
+            const t = timers[id];
+            if(t.isRunning) {
+                // 실행 중에 '정지' 누르면 초기화 (일시정지 아님)
+                t.isRunning = false;
+                t.current = t.time; 
+                document.getElementById(`flash-${t.id}`).classList.remove('animate-pulse', 'opacity-100');
             } else {
-                indicator.style.transform = 'translateX(100%)';
-                dBtn.classList.replace('text-zinc-500', 'text-white');
-                dBtn.classList.add('drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]');
-                
-                fBtn.classList.replace('text-white', 'text-zinc-500');
-                fBtn.classList.remove('drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]');
-                
-                dSection.classList.remove('hidden');
-                setTimeout(() => {
-                    dSection.style.opacity = 1;
-                    fSection.style.opacity = 0;
-                }, 10);
-                setTimeout(() => fSection.classList.add('hidden'), 300);
+                // '시작' 누름
+                if(t.current <= 0) {
+                    t.current = t.time;
+                    document.getElementById(`flash-${t.id}`).classList.remove('animate-pulse', 'opacity-100');
+                }
+                t.isRunning = true;
+            }
+            updateTimerUI(id);
+        }
+
+        function toggleMute(id) {
+            timers[id].isMuted = !timers[id].isMuted;
+            document.getElementById(`mute-icon-${id}`).innerText = timers[id].isMuted ? '🔇' : '🔊';
+        }
+
+        function updateTimerUI(id) {
+            const t = timers[id];
+            const display = document.getElementById(`display-${id}`);
+            const btn = document.getElementById(`btn-${id}`);
+            const progress = document.getElementById(`progress-${id}`);
+            
+            if(display.tagName.toLowerCase() === 'input') {
+                display.value = formatTime(t.current);
+                display.disabled = t.isRunning; 
+            } else {
+                display.innerText = formatTime(t.current);
+            }
+
+            if(t.isRunning) {
+                btn.innerText = '정지';
+                btn.classList.replace('bg-[#5b66f5]', 'bg-zinc-700');
+                btn.classList.replace('hover:bg-[#4f58d9]', 'hover:bg-zinc-600');
+            } else {
+                btn.innerText = '시작';
+                btn.classList.replace('bg-zinc-700', 'bg-[#5b66f5]');
+                btn.classList.replace('hover:bg-zinc-600', 'hover:bg-[#4f58d9]');
+            }
+
+            const pct = (t.current / t.time) * 100;
+            progress.style.width = `${pct}%`;
+            progress.className = `absolute top-0 left-0 bottom-0 transition-all duration-1000 ease-linear ${pct <= 10 ? 'bg-red-500/30' : 'bg-[#5b66f5]/20'}`;
+        }
+
+        function toggleRaid() {
+            const btn = document.getElementById('raid-btn');
+            isRaidRunning = !isRaidRunning;
+            if(isRaidRunning) {
+                btn.innerText = '정지';
+                btn.classList.replace('bg-[#5b66f5]', 'bg-red-600');
+                btn.classList.replace('hover:bg-[#4f58d9]', 'hover:bg-red-700');
+            } else {
+                btn.innerText = '시작';
+                btn.classList.replace('bg-red-600', 'bg-[#5b66f5]');
+                btn.classList.replace('hover:bg-red-700', 'hover:bg-[#4f58d9]');
             }
         }
 
-        const itemNames = ["훈장", "두루마리", "음식", "와인"];
+        function resetRaid() {
+            isRaidRunning = false;
+            raidSeconds = 0;
+            document.getElementById('raid-time-display').innerText = formatTime(raidSeconds);
+            const btn = document.getElementById('raid-btn');
+            btn.innerText = '시작';
+            if (btn.classList.contains('bg-red-600')) {
+                btn.classList.replace('bg-red-600', 'bg-[#5b66f5]');
+                btn.classList.replace('hover:bg-red-700', 'hover:bg-[#4f58d9]');
+            }
+        }
+
+        // 웹 브라우저 TTS (음성 읽어주기) 함수 추가
+        function speakText(text) {
+            if (!window.speechSynthesis) return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; // 한국어 설정
+            utterance.rate = 1.0; // 읽는 속도
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 전체 카운트다운 인터벌
+        setInterval(() => {
+            if(isRaidRunning) {
+                raidSeconds++;
+                document.getElementById('raid-time-display').innerText = formatTime(raidSeconds);
+            }
+
+            let partyChanged = false;
+            partiesData.forEach(p => {
+                p.forEach(m => {
+                    if(m.isDead && m.deathCurrent > 0) { m.deathCurrent--; partyChanged = true; }
+                    else if(m.isDead && m.deathCurrent <= 0) { m.isDead = false; partyChanged = true; }
+                    
+                    if(m.isRes && m.resCurrent > 0) { m.resCurrent--; partyChanged = true; }
+                    else if(m.isRes && m.resCurrent <= 0) { m.isRes = false; partyChanged = true; }
+                });
+            });
+            if(partyChanged) renderParties();
+
+            Object.values(timers).forEach(t => {
+                if(t.isRunning) {
+                    if(t.current > 0) {
+                        t.current--;
+                        updateTimerUI(t.id);
+                        
+                        // 10초가 남았고 음소거 상태가 아닐 때 음성 출력
+                        if(t.current === 10 && !t.isMuted) {
+                            speakText(`${t.title} 10초 전`);
+                        }
+                        
+                        if(t.current === 0) {
+                            if(!t.isMuted) playBeep();
+                            const flash = document.getElementById(`flash-${t.id}`);
+                            if(flash) flash.classList.add('animate-pulse', 'opacity-100');
+                            t.isRunning = false;
+                            updateTimerUI(t.id);
+                        }
+                    }
+                }
+            });
+        }, 1000);
+
+        // ==========================================
+        // 2. 현자의 분수 로직
+        // ==========================================
+        const fountainItems = ["훈장", "두루마리", "음식", "와인"];
         let possibleCases = [];
 
         function generateAllCases() {
             let cases = [];
-            for (let a of itemNames)
-                for (let b of itemNames)
-                    for (let c of itemNames)
-                        for (let d of itemNames)
-                            cases.push([a, b, c, d]);
+            for (let a of fountainItems) for (let b of fountainItems) for (let c of fountainItems) for (let d of fountainItems) cases.push([a, b, c, d]);
             return cases;
-        }
-
-        function getFeedback(guess, secret) {
-            let exact = 0; 
-            let partial = 0; 
-            let gTemp = [...guess];
-            let sTemp = [...secret];
-
-            for (let i = 0; i < 4; i++) {
-                if (gTemp[i] === sTemp[i]) {
-                    exact++;
-                    gTemp[i] = null;
-                    sTemp[i] = null;
-                }
-            }
-
-            for (let i = 0; i < 4; i++) {
-                if (gTemp[i] !== null) {
-                    let matchIdx = sTemp.indexOf(gTemp[i]);
-                    if (matchIdx !== -1) {
-                        partial++;
-                        sTemp[matchIdx] = null;
-                    }
-                }
-            }
-            return { exact, partial };
         }
 
         function initFountain() {
             possibleCases = generateAllCases();
             updateFountainUI();
-            hideFountainError();
+        }
+
+        function getFeedback(guess, secret) {
+            let exact = 0, partial = 0;
+            let gTemp = [...guess], sTemp = [...secret];
+            for (let i = 0; i < 4; i++) { if (gTemp[i] === sTemp[i]) { exact++; gTemp[i] = null; sTemp[i] = null; } }
+            for (let i = 0; i < 4; i++) {
+                if (gTemp[i] !== null) {
+                    let matchIdx = sTemp.indexOf(gTemp[i]);
+                    if (matchIdx !== -1) { partial++; sTemp[matchIdx] = null; }
+                }
+            }
+            return { exact, partial };
         }
 
         function showError(msg) {
             const errEl = document.getElementById('fountain-error');
             errEl.innerText = msg;
             errEl.classList.remove('hidden');
-        }
-        function hideFountainError() {
-            document.getElementById('fountain-error').classList.add('hidden');
+            setTimeout(() => { errEl.classList.add('hidden'); }, 4000);
         }
 
         function submitGuess() {
-            hideFountainError();
-
             const guesses = Array.from(document.querySelectorAll('.guess')).map(sel => sel.value);
-            const exactInput = parseInt(document.getElementById('exact').value) || 0;
-            const partialInput = parseInt(document.getElementById('partial').value) || 0;
-            const noneInput = parseInt(document.getElementById('none').value) || 0;
+            const exact = parseInt(document.getElementById('exact').value) || 0;
+            const partial = parseInt(document.getElementById('partial').value) || 0;
+            const none = parseInt(document.getElementById('none').value) || 0;
 
-            if (exactInput + partialInput + noneInput !== 4) {
+            if (exact + partial + none !== 4) {
                 showError("입력 오류! '맞습니다', '틀리다', '모른다' 개수의 합은 반드시 4가 되어야 합니다.");
                 return;
             }
 
             possibleCases = possibleCases.filter(secret => {
-                let feedback = getFeedback(guesses, secret);
-                return feedback.exact === exactInput && feedback.partial === partialInput;
+                let fb = getFeedback(guesses, secret);
+                return fb.exact === exact && fb.partial === partial;
             });
-
             updateFountainUI();
         }
 
-        function resetSimulator() {
+        function resetFountain() {
             initFountain();
             document.getElementById('exact').value = 0;
             document.getElementById('partial').value = 0;
             document.getElementById('none').value = 0;
+            document.getElementById('fountain-error').classList.add('hidden');
         }
 
         function updateFountainUI() {
             document.getElementById('count').innerText = possibleCases.length;
-            const listEl = document.getElementById('remaining-list');
-            
             if (possibleCases.length > 0) {
                 document.getElementById('recommendation').innerText = possibleCases[0].join(" - ");
-                
-                // 다크테마용 리스트 스타일
-                listEl.innerHTML = possibleCases.map(c => 
-                    `<div class="bg-zinc-900/50 p-2 rounded border border-zinc-800/60">${c.join(" <span class='text-zinc-700'>|</span> ")}</div>`
-                ).join("");
+                document.getElementById('remaining-list').innerHTML = possibleCases.map(c => c.join(" - ")).join("<br>");
             } else {
-                document.getElementById('recommendation').innerText = "결과 없음";
-                listEl.innerHTML = `
-                    <div class="col-span-1 sm:col-span-2 text-center py-10">
-                        <div class="text-3xl mb-3 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">⚠️</div>
-                        <span class='text-red-500 font-bold'>조건에 맞는 결과가 없습니다.</span><br>
-                        <span class="text-zinc-600 mt-1 block">NPC 멘트를 잘못 입력하셨거나, 불가능한 값을 입력하셨습니다.</span>
-                    </div>`;
+                document.getElementById('recommendation').innerText = "없음";
+                document.getElementById('remaining-list').innerHTML = "<span class='text-red-500 font-bold'>조건에 맞는 결과가 없습니다. 입력 멘트를 확인하세요.</span>";
             }
         }
 
-        function formatNumber(num) {
-            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // ==========================================
+        // 3. 분배 계산기 로직
+        // ==========================================
+        function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+        function parseNum(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
+
+        function handleNumInput(e) {
+            let val = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = val !== '' ? formatNumber(parseInt(val, 10)) : '';
+            calcDist();
         }
 
-        function handleInputFormatting(e) {
-            let val = e.target.value.replace(/[^0-9]/g, ''); 
-            if(val !== '') {
-                e.target.value = formatNumber(parseInt(val, 10));
-            } else {
-                e.target.value = '';
-            }
-            calculateDist();
-        }
+        function calcDist() {
+            let sales = parseNum(document.getElementById('dist-sales').value);
+            let scissors = parseNum(document.getElementById('dist-scissors').value);
+            let feeRate = parseNum(document.getElementById('dist-fee').value);
+            let people = parseNum(document.getElementById('dist-people').value) || 1;
+            let mailPercent = parseNum(document.getElementById('dist-mail-percent').value);
+            let mailFixed = parseNum(document.getElementById('dist-mail-fixed').value);
 
-        function calculateDist() {
-            let salesInput = document.getElementById('dist-sales').value.replace(/,/g, '');
-            let scissorInput = document.getElementById('dist-scissor').value.replace(/,/g, '');
-            let mailFlatInput = document.getElementById('dist-mail-flat').value.replace(/,/g, '');
-            
-            let sales = parseFloat(salesInput) || 0;
-            let feeRate = parseFloat(document.getElementById('dist-fee').value) || 0;
-            let scissor = parseFloat(scissorInput) || 0;
-            let people = parseFloat(document.getElementById('dist-people').value) || 1;
-            let mailPercent = parseFloat(document.getElementById('dist-mail-percent').value) || 0;
-            let mailFlat = parseFloat(mailFlatInput) || 0;
-
-            if (people < 1) people = 1;
-
-            let totalAfterAuctionFee = sales * (1 - (feeRate / 100));
-            let totalToDist = totalAfterAuctionFee - scissor;
-            
-            let resultPerPerson = Math.floor(totalToDist / people);
+            let afterAuction = sales * (1 - (feeRate / 100));
+            let resultPerPerson = Math.floor((afterAuction - scissors) / people);
             if(resultPerPerson < 0) resultPerPerson = 0;
-            
-            let mailDeduction = Math.floor(resultPerPerson * (mailPercent / 100)) + mailFlat;
-            let finalAmount = resultPerPerson - mailDeduction;
-
+            let finalAmount = Math.floor(resultPerPerson * (1 - (mailPercent / 100))) - mailFixed;
             if(finalAmount < 0) finalAmount = 0;
 
             document.getElementById('dist-result').value = formatNumber(resultPerPerson);
@@ -479,26 +799,203 @@
 
         function resetDist() {
             document.getElementById('dist-sales').value = '';
-            // 요청사항: 기본값 10, 8 세팅
-            document.getElementById('dist-fee').value = 10;
-            document.getElementById('dist-scissor').value = '0';
-            document.getElementById('dist-people').value = 6;
-            document.getElementById('dist-mail-percent').value = 8;
-            document.getElementById('dist-mail-flat').value = '10,000';
-            calculateDist();
+            document.getElementById('dist-scissors').value = '0';
+            document.getElementById('dist-fee').value = '10';
+            document.getElementById('dist-people').value = '6';
+            document.getElementById('dist-mail-percent').value = '8';
+            document.getElementById('dist-mail-fixed').value = '10,000';
+            calcDist();
         }
 
-        document.getElementById('dist-sales').addEventListener('input', handleInputFormatting);
-        document.getElementById('dist-scissor').addEventListener('input', handleInputFormatting);
-        document.getElementById('dist-mail-flat').addEventListener('input', handleInputFormatting);
-        
-        document.getElementById('dist-fee').addEventListener('input', calculateDist);
-        document.getElementById('dist-people').addEventListener('input', calculateDist);
-        document.getElementById('dist-mail-percent').addEventListener('input', calculateDist);
+        // 이벤트 리스너 등록
+        document.getElementById('dist-sales').addEventListener('input', handleNumInput);
+        document.getElementById('dist-scissors').addEventListener('input', handleNumInput);
+        document.getElementById('dist-mail-fixed').addEventListener('input', handleNumInput);
+        document.getElementById('dist-fee').addEventListener('input', calcDist);
+        document.getElementById('dist-people').addEventListener('input', calcDist);
+        document.getElementById('dist-mail-percent').addEventListener('input', calcDist);
 
-        initFountain();
-        calculateDist();
+        // ==========================================
+        // 4. 길드원 관리 및 길드스킬 현황 (Drag & Drop)
+        // ==========================================
+        let currentDate = new Date();
+        let activeYear = currentDate.getFullYear();
+        let activeMonth = currentDate.getMonth() + 1;
+        let guildDataByMonth = {}; // 월별 데이터를 저장할 객체
+        let isMemberTabUnlocked = false; // 비밀번호 잠금 상태
 
+        function unlockMemberTab() {
+            const pwInput = document.getElementById('member-password');
+            const errDiv = document.getElementById('password-error');
+            
+            if (pwInput.value === '191919') {
+                isMemberTabUnlocked = true;
+                document.getElementById('member-lock-screen').classList.add('hidden');
+                document.getElementById('member-content').classList.remove('hidden');
+                document.getElementById('member-content').classList.add('block');
+                pwInput.value = ''; // 입력창 비우기
+            } else {
+                errDiv.classList.remove('hidden');
+                setTimeout(() => errDiv.classList.add('hidden'), 3000);
+            }
+        }
+
+        // 현재 보고 있는 "연도-월" 키값 생성
+        function getActiveKey() {
+            return `${activeYear}-${activeMonth}`;
+        }
+
+        // 해당 월의 배열이 없으면 초기화
+        function ensureMonthData() {
+            const key = getActiveKey();
+            if (!guildDataByMonth[key]) {
+                guildDataByMonth[key] = [];
+            }
+        }
+
+        // 달력 이동 로직
+        function changeMonth(offset) {
+            const currentKey = getActiveKey();
+            
+            activeMonth += offset;
+            if (activeMonth > 12) { activeMonth = 1; activeYear++; }
+            if (activeMonth < 1) { activeMonth = 12; activeYear--; }
+            
+            const newKey = getActiveKey();
+            
+            // 이동할 달의 데이터가 없으면, 직전에 보고 있던 달의 데이터를 깊은 복사(그대로 가져옴)
+            if (!guildDataByMonth[newKey]) {
+                guildDataByMonth[newKey] = JSON.parse(JSON.stringify(guildDataByMonth[currentKey] || []));
+            }
+            
+            document.getElementById('month-display').innerText = `${activeYear}년 ${activeMonth}월`;
+            renderGuildMembers();
+        }
+
+        function addGuildMember() {
+            const input = document.getElementById('new-member-input');
+            const roleSelect = document.getElementById('new-member-role');
+            const name = input.value.trim();
+            const role = roleSelect.value;
+
+            if (!name) return;
+            
+            const activeData = guildDataByMonth[getActiveKey()];
+
+            // 중복 검사
+            if (activeData.find(m => m.name === name)) {
+                alert("이미 등록된 길드원입니다.");
+                return;
+            }
+
+            activeData.push({
+                id: 'guild_m_' + Date.now(),
+                name: name,
+                role: role,
+                isVerified: false // 기본값: 미인증
+            });
+            input.value = '';
+            renderGuildMembers();
+        }
+
+        function removeGuildMember(id) {
+            const key = getActiveKey();
+            guildDataByMonth[key] = guildDataByMonth[key].filter(m => m.id !== id);
+            renderGuildMembers();
+        }
+
+        function renderGuildMembers() {
+            ensureMonthData();
+            const activeData = guildDataByMonth[getActiveKey()];
+
+            const masterContainer = document.getElementById('guild-master-container');
+            const adminContainer = document.getElementById('guild-admin-container');
+            const memberContainer = document.getElementById('guild-member-container');
+            
+            const unverifiedContainer = document.getElementById('unverified-container');
+            const verifiedContainer = document.getElementById('verified-container');
+            
+            masterContainer.innerHTML = '';
+            adminContainer.innerHTML = '';
+            memberContainer.innerHTML = '';
+            unverifiedContainer.innerHTML = '';
+            verifiedContainer.innerHTML = '';
+
+            activeData.forEach(m => {
+                // 1. [길드인원 현황] 상단 태그 렌더링
+                const tag = document.createElement('div');
+                tag.className = `flex items-center gap-2 px-3 py-1.5 rounded font-bold text-sm shadow-sm transition-colors ${m.isVerified ? 'bg-zinc-700 text-gray-200' : 'bg-red-600 text-white border border-red-500/50'}`;
+                tag.innerHTML = `
+                    <span>${m.name}</span>
+                    <button onclick="removeGuildMember('${m.id}')" class="text-xs opacity-50 hover:opacity-100 focus:outline-none">✕</button>
+                `;
+                
+                if (m.role === 'master') masterContainer.appendChild(tag);
+                else if (m.role === 'admin') adminContainer.appendChild(tag);
+                else memberContainer.appendChild(tag);
+
+                // 2. [길드스킬 현황] 드래그 앤 드롭 아이템 렌더링
+                const dragItem = document.createElement('div');
+                dragItem.id = m.id;
+                dragItem.draggable = true;
+                dragItem.ondragstart = dragMember;
+                
+                let roleIcon = m.role === 'master' ? '👑' : (m.role === 'admin' ? '🛡️' : '👤');
+
+                dragItem.className = "bg-[#242427] border border-zinc-600 hover:border-[#5b66f5] text-white p-3 rounded cursor-grab active:cursor-grabbing font-bold shadow transition-colors flex justify-between items-center group";
+                dragItem.innerHTML = `<span class="flex items-center gap-2"><span class="text-xs">${roleIcon}</span> ${m.name}</span><span class="text-xs text-zinc-500 group-hover:text-[#5b66f5]">:: 드래그</span>`;
+                
+                if (m.isVerified) {
+                    verifiedContainer.appendChild(dragItem);
+                } else {
+                    unverifiedContainer.appendChild(dragItem);
+                }
+            });
+            
+            // 데이터가 비어있을 때 안내 메시지
+            if (masterContainer.children.length === 0) masterContainer.innerHTML = '<span class="text-zinc-600 text-sm font-normal">-</span>';
+            if (adminContainer.children.length === 0) adminContainer.innerHTML = '<span class="text-zinc-600 text-sm font-normal">-</span>';
+            if (memberContainer.children.length === 0) memberContainer.innerHTML = '<span class="text-zinc-600 text-sm font-normal">-</span>';
+
+            if (activeData.length === 0) {
+                unverifiedContainer.innerHTML = '<div class="text-center text-zinc-600 text-sm mt-8">인원을 추가해주세요</div>';
+                verifiedContainer.innerHTML = '<div class="text-center text-zinc-600 text-sm mt-8">인원을 추가해주세요</div>';
+            }
+        }
+
+        // 드래그 앤 드롭 이벤트 핸들러
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function dragMember(ev) {
+            ev.dataTransfer.setData("memberId", ev.target.id);
+        }
+
+        function dropMember(ev, isVerifiedTarget) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("memberId");
+            const activeData = guildDataByMonth[getActiveKey()];
+            const member = activeData.find(m => m.id === id);
+            
+            if (member && member.isVerified !== isVerifiedTarget) {
+                member.isVerified = isVerifiedTarget;
+                renderGuildMembers();
+            }
+        }
+
+        // 초기 구동
+        window.onload = function() {
+            renderParties();
+            renderBossTimers();
+            initFountain();
+            calcDist();
+            
+            // 월별 데이터 초기화 및 렌더링
+            ensureMonthData();
+            document.getElementById('month-display').innerText = `${activeYear}년 ${activeMonth}월`;
+            renderGuildMembers(); 
+        }
     </script>
 </body>
 </html>
