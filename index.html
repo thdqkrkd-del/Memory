@@ -93,12 +93,12 @@
             <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-bold text-white flex items-center gap-2">⚔️ 보스 공략 관리</h2>
-                    <div class="text-xs text-zinc-400">💡 보스 공략 추가/수정/삭제 시 비밀번호(191919)가 필요합니다.</div>
+                    <div class="text-xs text-zinc-400">💡 보스 공략 추가/수정/삭제 시 비밀번호가 필요합니다.</div>
                 </div>
 
-                <!-- 보스 공략 추가 입력 바 -->
-                <div class="flex gap-3 mb-8 bg-[#1a1a1c] p-4 rounded-xl border border-zinc-700">
-                    <input type="text" id="boss-topic-input" placeholder="보스 공략 이름 입력 (예: 혼테일 본체 페이즈, 자쿰 1페 공략 등)" class="flex-1 bg-[#242427] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold">
+                <!-- 보스 공략 추가 입력 바 (엔터 시 줄바꿈이 가능하도록 textarea로 변경) -->
+                <div class="flex gap-3 mb-8 bg-[#1a1a1c] p-4 rounded-xl border border-zinc-700 items-start">
+                    <textarea id="boss-topic-input" placeholder="보스 공략 이름 입력 (예: 혼테일 본체 페이즈, 자쿰 1페 공략 등)\nEnter를 누르면 줄바꿈이 됩니다." rows="2" class="flex-1 bg-[#242427] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold resize-y"></textarea>
                     <button onclick="addBossTopic()" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-6 py-3 rounded font-bold transition-colors shadow-lg whitespace-nowrap">보스 공략 추가</button>
                 </div>
 
@@ -634,7 +634,7 @@
         window.bossTopics = [];
 
         window.verifyBossPassword = function(actionName, callback) {
-            const pw = prompt(`🛡️ [보스 공략 ${actionName}] 권한 확인\n관리자 비밀번호를 입력하세요:`);
+            const pw = prompt(`🛡️ [보스 공략 ${actionName}] 권한 확인\n관리자 비밀번호(191919)를 입력하세요:`);
             if (pw === null) return; // 취소
             if (pw === '191919') {
                 callback();
