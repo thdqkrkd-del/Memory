@@ -695,7 +695,7 @@
         window.isEditingPost = false;
 
         window.verifyBossPassword = function(actionName, callback) {
-            const pw = prompt(`🛡️ [보스 공략 ${actionName}] 관리자 비밀번호(191919)를 입력하세요:`);
+            const pw = prompt(`🛡️ [보스 공략 ${actionName}] 관리자 비밀번호를 입력하세요:`);
             if (pw === null) return; // 취소
             if (pw === '191919') {
                 callback();
