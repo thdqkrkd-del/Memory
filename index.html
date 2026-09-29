@@ -58,18 +58,19 @@
                 <span class="text-sm font-medium text-zinc-500 ml-1.5 pb-0.5">| 길드 유틸리티</span>
             </div>
             <div class="flex gap-2">
-                <button onclick="switchTab('timer')" id="tab-timer-btn" class="tab-btn active px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">⏰ 보스 타이머</button>
-                <button onclick="switchTab('fountain')" id="tab-fountain-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">🗿 현자의 분수</button>
-                <button onclick="switchTab('distribute')" id="tab-distribute-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">💰 분배 계산기</button>
-                <button onclick="switchTab('member')" id="tab-member-btn" class="tab-btn px-4 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">👥 길드원 관리 (Cloud)</button>
+                <button onclick="switchTab('timer')" id="tab-timer-btn" class="tab-btn active px-3 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">⏰ 보스 타이머</button>
+                <button onclick="switchTab('boss')" id="tab-boss-btn" class="tab-btn px-3 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">⚔️ 보스 공략</button>
+                <button onclick="switchTab('fountain')" id="tab-fountain-btn" class="tab-btn px-3 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">🗿 현자의 분수</button>
+                <button onclick="switchTab('distribute')" id="tab-distribute-btn" class="tab-btn px-3 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">💰 분배 계산기</button>
+                <button onclick="switchTab('member')" id="tab-member-btn" class="tab-btn px-3 py-2 text-sm text-gray-400 hover:text-[#5b66f5]">👥 길드원 관리</button>
             </div>
         </div>
     </nav>
 
     <main class="max-w-[1200px] mx-auto p-4 py-8">
         
+        <!-- ================= 타이머 탭 ================= -->
         <section id="timer-section" class="block">
-            <!-- 레이드 시간 헤더 -->
             <div class="flex items-center justify-center gap-4 mb-10">
                 <div class="text-zinc-400 text-sm">레이드 진행시간</div>
                 <div class="digital-font text-5xl font-bold tracking-widest text-white" id="raid-time-display">00:00:00</div>
@@ -77,65 +78,64 @@
                 <button onclick="resetRaid()" class="bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded font-bold transition-colors shadow-lg">초기화</button>
             </div>
 
-            <!-- 파티 관리 -->
             <div class="mb-12">
                 <div class="flex items-end justify-between mb-4 px-1">
                     <h2 class="text-xl font-bold text-white">원정대 관리 <span class="text-sm font-normal text-zinc-400 ml-2">총 <span id="total-members" class="text-white">0</span>명 · <span class="text-red-400">사망 <span id="dead-members">0</span>명</span></span></h2>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-3" id="parties-container">
-                    <!-- JS 동적 생성 -->
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-3" id="parties-container"></div>
             </div>
 
-            <!-- 보스 타이머 레이아웃 -->
-            <div id="boss-timers-container" class="space-y-8">
-                <!-- JS 동적 생성 -->
+            <div id="boss-timers-container" class="space-y-8"></div>
+        </section>
+
+        <!-- ================= 보스 공략 탭 ================= -->
+        <section id="boss-section" class="hidden max-w-5xl mx-auto space-y-8">
+            <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">⚔️ 보스 공략 관리</h2>
+                    <div class="text-xs text-zinc-400">💡 보스 공략 추가/수정/삭제 시 비밀번호(191919)가 필요합니다.</div>
+                </div>
+
+                <!-- 보스 공략 추가 입력 바 -->
+                <div class="flex gap-3 mb-8 bg-[#1a1a1c] p-4 rounded-xl border border-zinc-700">
+                    <input type="text" id="boss-topic-input" placeholder="보스 공략 이름 입력 (예: 혼테일 본체 페이즈, 자쿰 1페 공략 등)" class="flex-1 bg-[#242427] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold">
+                    <button onclick="addBossTopic()" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-6 py-3 rounded font-bold transition-colors shadow-lg whitespace-nowrap">보스 공략 추가</button>
+                </div>
+
+                <!-- 보스 공략 카드 목록 컨테이너 -->
+                <div id="boss-topics-container" class="space-y-6"></div>
             </div>
         </section>
 
+        <!-- ================= 현자의 분수 탭 ================= -->
         <section id="fountain-section" class="hidden max-w-2xl mx-auto">
             <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                 <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">🗿 현자의 분수 시뮬레이터</h2>
-                
                 <div class="bg-blue-500/10 border border-blue-500/30 text-blue-200 p-4 rounded-lg text-sm mb-8">
                     <strong>💡 팁:</strong> 처음에 훈장 4개를 뿌렸는데 <strong>"모른다 4개"</strong>가 나오면 훈장은 정답에 아예 없는 것입니다!
                 </div>
-
                 <div class="mb-8">
                     <strong class="block mb-3 text-zinc-300 text-sm">1. 바친 제물 세팅:</strong>
                     <div class="flex gap-2">
-                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
-                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
-                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
-                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5]"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5]"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5]"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
+                        <select class="guess flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5]"><option value="훈장">훈장</option><option value="두루마리">두루마리</option><option value="음식">음식</option><option value="와인">와인</option></select>
                     </div>
                 </div>
-
                 <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg mb-6">
                     <strong class="block mb-4 text-zinc-300 text-sm">2. NPC가 알려준 멘트 개수 입력:</strong>
                     <div class="flex justify-between gap-4">
-                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm">
-                            <span class="text-blue-400">⭕ 맞습니다</span>
-                            <input type="number" id="exact" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none focus:border-[#5b66f5] transition-colors">
-                        </label>
-                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm">
-                            <span class="text-orange-400">🔺 틀리다</span>
-                            <input type="number" id="partial" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none focus:border-[#5b66f5] transition-colors">
-                        </label>
-                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm">
-                            <span class="text-red-400">❌ 모른다</span>
-                            <input type="number" id="none" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none focus:border-[#5b66f5] transition-colors">
-                        </label>
+                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm"><span class="text-blue-400">⭕ 맞습니다</span><input type="number" id="exact" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none"></label>
+                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm"><span class="text-orange-400">🔺 틀리다</span><input type="number" id="partial" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none"></label>
+                        <label class="flex-1 flex flex-col items-center gap-2 text-zinc-400 font-bold text-sm"><span class="text-red-400">❌ 모른다</span><input type="number" id="none" min="0" max="4" value="0" class="w-full bg-[#242427] border border-zinc-600 p-2 rounded text-center text-white outline-none"></label>
                     </div>
                 </div>
-
                 <div id="fountain-error" class="hidden text-red-400 text-sm font-bold text-center mb-4 bg-red-500/10 border border-red-500/20 p-2 rounded"></div>
-
                 <div class="flex gap-3 mb-8">
                     <button onclick="submitGuess()" class="flex-1 bg-[#5b66f5] hover:bg-[#4f58d9] text-white font-bold py-3 px-4 rounded transition-colors shadow-lg">결과 입력 및 추리기</button>
                     <button onclick="resetFountain()" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-3 px-6 rounded transition-colors">초기화</button>
                 </div>
-
                 <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg text-center">
                     <h3 class="text-zinc-400 mb-2 font-bold">남은 경우의 수: <span id="count" class="text-[#5b66f5] font-black text-xl">256</span>개</h3>
                     <p class="mb-4 text-sm text-zinc-300">추천 다음 세팅: <span id="recommendation" class="font-bold text-[#5b66f5] text-base">-</span></p>
@@ -144,46 +144,26 @@
             </div>
         </section>
 
+        <!-- ================= 분배 계산기 탭 ================= -->
         <section id="distribute-section" class="hidden max-w-4xl mx-auto">
             <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                 <h2 class="text-xl font-bold mb-8 text-white flex items-center gap-2">💰 보스 리워드 분배기</h2>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <div class="space-y-5">
                         <h3 class="font-bold text-zinc-300 border-b border-zinc-700 pb-2 text-sm">세팅 (수정 가능)</h3>
-                        <div>
-                            <label class="block text-sm text-zinc-400 mb-1">판매 금액 (메소)</label>
-                            <input type="text" id="dist-sales" placeholder="100,000,000" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-zinc-400 mb-1">가위값 공제 (메소)</label>
-                            <input type="text" id="dist-scissors" value="0" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
+                        <div><label class="block text-sm text-zinc-400 mb-1">판매 금액 (메소)</label><input type="text" id="dist-sales" placeholder="100,000,000" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none text-right font-bold"></div>
+                        <div><label class="block text-sm text-zinc-400 mb-1">가위값 공제 (메소)</label><input type="text" id="dist-scissors" value="0" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none text-right font-bold"></div>
+                        <div class="flex gap-4">
+                            <div class="flex-1"><label class="block text-sm text-zinc-400 mb-1">경매장 수수료 (%)</label><input type="number" id="dist-fee" value="10" min="0" max="100" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none text-right font-bold"></div>
+                            <div class="flex-1"><label class="block text-sm text-zinc-400 mb-1">분배 인원 (명)</label><input type="number" id="dist-people" value="6" min="1" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none text-right font-bold"></div>
                         </div>
                         <div class="flex gap-4">
-                            <div class="flex-1">
-                                <label class="block text-sm text-zinc-400 mb-1">경매장 수수료 (%)</label>
-                                <input type="number" id="dist-fee" value="10" min="0" max="100" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-sm text-zinc-400 mb-1">분배 인원 (명)</label>
-                                <input type="number" id="dist-people" value="6" min="1" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
-                            </div>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="flex-1">
-                                <label class="block text-sm text-zinc-400 mb-1">택배 수수료 (%)</label>
-                                <input type="number" id="dist-mail-percent" value="8" min="0" max="100" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
-                            </div>
-                            <div class="flex-1">
-                                <label class="block text-sm text-zinc-400 mb-1">택배비 (건당 메소)</label>
-                                <input type="text" id="dist-mail-fixed" value="10,000" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] text-right font-bold transition-colors">
-                            </div>
+                            <div class="flex-1"><label class="block text-sm text-zinc-400 mb-1">택배 수수료 (%)</label><input type="number" id="dist-mail-percent" value="8" min="0" max="100" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none text-right font-bold"></div>
+                            <div class="flex-1"><label class="block text-sm text-zinc-400 mb-1">택배비 (건당 메소)</label><input type="text" id="dist-mail-fixed" value="10,000" class="w-full bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none text-right font-bold"></div>
                         </div>
                     </div>
-
                     <div class="space-y-5">
                         <h3 class="font-bold text-zinc-300 border-b border-zinc-700 pb-2 text-sm">최종 결과 (자동 계산)</h3>
-                        
                         <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg">
                             <label class="block text-sm text-zinc-400 mb-2">1인당 기본 분배금 <span class="text-xs text-zinc-500">(가위값·경매장수수료 공제)</span></label>
                             <div class="flex items-center justify-end gap-2">
@@ -191,7 +171,6 @@
                                 <span class="text-zinc-500 font-bold">메소</span>
                             </div>
                         </div>
-                        
                         <div class="bg-[#1a1a1c] border border-[#5b66f5]/30 p-5 rounded-lg shadow-[0_0_15px_rgba(91,102,245,0.1)]">
                             <label class="block text-sm text-[#5b66f5] font-bold mb-2">최종 실수령액 <span class="text-xs text-[#5b66f5]/70">(택배비 모두 차감)</span></label>
                             <div class="flex items-center justify-end gap-2">
@@ -199,24 +178,18 @@
                                 <span class="text-zinc-400 font-bold">메소</span>
                             </div>
                         </div>
-                        
-                        <!-- 복사 공유 버튼 추가 -->
                         <div class="flex gap-2">
-                            <button onclick="copyDistResult()" class="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded transition-colors shadow-lg flex items-center justify-center gap-2">
-                                📋 결과 상세 복사하기
-                            </button>
+                            <button onclick="copyDistResult()" class="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-4 rounded transition-colors shadow-lg flex items-center justify-center gap-2">📋 결과 상세 복사하기</button>
                             <button onclick="resetDist()" class="bg-zinc-700 hover:bg-zinc-600 text-white px-4 rounded font-bold transition-colors">초기화</button>
                         </div>
-                        <div id="copy-toast" class="hidden text-center text-green-400 text-xs font-bold mt-1 bg-green-500/10 border border-green-500/30 py-1.5 rounded">
-                            ✨ 클립보드에 복사되었습니다! 채팅창에 바로 붙여넣기(Ctrl+V) 하세요.
-                        </div>
+                        <div id="copy-toast" class="hidden text-center text-green-400 text-xs font-bold mt-1 bg-green-500/10 border border-green-500/30 py-1.5 rounded">✨ 클립보드에 복사되었습니다! 채팅창에 바로 붙여넣기(Ctrl+V) 하세요.</div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- ================= 길드원 관리 탭 ================= -->
         <section id="member-section" class="hidden max-w-5xl mx-auto space-y-8">
-            <!-- 비밀번호 잠금 화면 -->
             <div id="member-lock-screen" class="bg-[#242427] rounded-xl border border-zinc-700 p-10 text-center shadow-lg max-w-md mx-auto mt-20">
                 <div class="text-5xl mb-4">🔒</div>
                 <h2 class="text-xl font-bold text-white mb-2">운영진 전용 메뉴</h2>
@@ -226,14 +199,7 @@
                 <button onclick="unlockMemberTab()" class="w-full bg-[#5b66f5] hover:bg-[#4f58d9] text-white py-3 rounded font-bold transition-colors shadow-lg">잠금 해제</button>
             </div>
 
-            <!-- 실제 길드원 관리 콘텐츠 -->
             <div id="member-content" class="hidden space-y-8">
-                <!-- 클라우드 연동 상태 표시줄 -->
-                <div id="cloud-status" class="bg-blue-900/30 border border-blue-500/50 text-blue-300 text-sm p-3 rounded text-center shadow-lg">
-                    🔄 실시간 클라우드 연결 중...
-                </div>
-
-                <!-- 연월 네비게이션 -->
                 <div class="flex justify-between items-center bg-[#242427] border border-zinc-700 p-4 rounded-xl shadow-lg">
                     <button onclick="changeMonth(-1)" class="bg-zinc-700 hover:bg-zinc-600 text-white px-5 py-2 rounded font-bold transition-colors shadow">◀ 이전 달</button>
                     <h2 class="text-2xl font-black text-white tracking-widest" id="month-display">2026년 9월</h2>
@@ -242,17 +208,15 @@
 
                 <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                     <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2">👥 길드인원 현황</h2>
-                    
                     <div class="flex gap-3 mb-2">
-                        <select id="new-member-role" class="bg-[#1a1a1c] border border-zinc-600 text-white px-4 py-3 rounded outline-none focus:border-[#5b66f5] transition-colors font-bold cursor-pointer">
+                        <select id="new-member-role" class="bg-[#1a1a1c] border border-zinc-600 text-white px-4 py-3 rounded outline-none focus:border-[#5b66f5] font-bold cursor-pointer">
                             <option value="member">👤 길드원</option>
                             <option value="admin">🛡️ 운영진</option>
                             <option value="master">👑 길드장</option>
                         </select>
-                        <input type="text" id="new-member-input" placeholder="추가할 길드원 닉네임 입력 (Enter로 추가)" class="flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors" onkeypress="if(event.key==='Enter') addGuildMember()">
+                        <input type="text" id="new-member-input" placeholder="추가할 길드원 닉네임 입력 (Enter로 추가)" class="flex-1 bg-[#1a1a1c] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5]" onkeypress="if(event.key==='Enter') addGuildMember()">
                         <button onclick="addGuildMember()" class="bg-[#5b66f5] hover:bg-[#4f58d9] text-white px-6 py-3 rounded font-bold transition-colors shadow-lg">인원 추가</button>
                     </div>
-                    <!-- 오류 메시지 출력란 -->
                     <div id="member-add-error" class="text-red-400 text-sm font-bold mb-4 hidden bg-red-500/10 border border-red-500/20 p-2 rounded text-center"></div>
 
                     <div class="bg-[#1a1a1c] border border-zinc-700 p-5 rounded-lg min-h-[120px] space-y-6">
@@ -286,7 +250,6 @@
                 <div class="bg-[#242427] rounded-xl border border-zinc-700 p-8 shadow-lg">
                     <h2 class="text-xl font-bold mb-2 text-white flex items-center gap-2">✨ 길드스킬 현황</h2>
                     <p class="text-sm text-zinc-400 mb-6">아래 이름표를 마우스로 끌어서(Drag & Drop) 인증 상태를 변경하세요. (실시간 저장)</p>
-                    
                     <div class="grid grid-cols-2 gap-6">
                         <div class="bg-[#1a1a1c] border-2 border-dashed border-red-500/30 rounded-xl p-4 min-h-[250px] flex flex-col" ondrop="dropMember(event, false)" ondragover="allowDrop(event)">
                             <h3 class="text-red-400 font-bold mb-4 text-center border-b border-red-500/20 pb-2">❌ 미인증</h3>
@@ -308,7 +271,6 @@
         function playBeep() {
             if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            
             let count = 0;
             let interval = setInterval(() => {
                 const osc = audioCtx.createOscillator();
@@ -321,23 +283,34 @@
                 osc.start();
                 gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
                 osc.stop(audioCtx.currentTime + 0.1);
-                
                 count++;
                 if(count >= 3) clearInterval(interval);
             }, 150);
         }
 
         function switchTab(tab) {
-            ['timer', 'fountain', 'distribute', 'member'].forEach(t => {
-                document.getElementById(`tab-${t}-btn`).classList.remove('active', 'text-[#5b66f5]');
-                document.getElementById(`tab-${t}-btn`).classList.add('text-gray-400');
-                document.getElementById(`${t}-section`).classList.add('hidden');
-                document.getElementById(`${t}-section`).classList.remove('block');
+            ['timer', 'boss', 'fountain', 'distribute', 'member'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}-btn`);
+                const sec = document.getElementById(`${t}-section`);
+                if(btn) {
+                    btn.classList.remove('active', 'text-[#5b66f5]');
+                    btn.classList.add('text-gray-400');
+                }
+                if(sec) {
+                    sec.classList.add('hidden');
+                    sec.classList.remove('block');
+                }
             });
-            document.getElementById(`tab-${tab}-btn`).classList.add('active', 'text-[#5b66f5]');
-            document.getElementById(`tab-${tab}-btn`).classList.remove('text-gray-400');
-            document.getElementById(`${tab}-section`).classList.remove('hidden');
-            document.getElementById(`${tab}-section`).classList.add('block');
+            const activeBtn = document.getElementById(`tab-${tab}-btn`);
+            const activeSec = document.getElementById(`${tab}-section`);
+            if(activeBtn) {
+                activeBtn.classList.add('active', 'text-[#5b66f5]');
+                activeBtn.classList.remove('text-gray-400');
+            }
+            if(activeSec) {
+                activeSec.classList.remove('hidden');
+                activeSec.classList.add('block');
+            }
         }
 
         function formatTime(secs) {
@@ -395,6 +368,7 @@
 
         function renderParties() {
             const container = document.getElementById('parties-container');
+            if(!container) return;
             let total = 0, dead = 0, html = '';
 
             partiesData.forEach((p, pIdx) => {
@@ -486,6 +460,7 @@
 
         function renderBossTimers() {
             const container = document.getElementById('boss-timers-container');
+            if(!container) return;
             let html = '';
             let isGridOpen = false;
             
@@ -562,6 +537,7 @@
             const display = document.getElementById(`display-${id}`);
             const btn = document.getElementById(`btn-${id}`);
             const progress = document.getElementById(`progress-${id}`);
+            if(!display || !btn || !progress) return;
             
             if(display.tagName.toLowerCase() === 'input') {
                 display.value = formatTime(t.current);
@@ -614,13 +590,16 @@
         setInterval(() => {
             if(isRaidRunning) {
                 raidSeconds++;
-                document.getElementById('raid-time-display').innerText = formatTime(raidSeconds);
+                const rEl = document.getElementById('raid-time-display');
+                if(rEl) rEl.innerText = formatTime(raidSeconds);
             }
+
             let partyChanged = false;
             partiesData.forEach(p => {
                 p.forEach(m => {
                     if(m.isDead && m.deathCurrent > 0) { m.deathCurrent--; partyChanged = true; }
                     else if(m.isDead && m.deathCurrent <= 0) { m.isDead = false; partyChanged = true; }
+                    
                     if(m.isRes && m.resCurrent > 0) { m.resCurrent--; partyChanged = true; }
                     else if(m.isRes && m.resCurrent <= 0) { m.isRes = false; partyChanged = true; }
                 });
@@ -632,7 +611,11 @@
                     if(t.current > 0) {
                         t.current--;
                         updateTimerUI(t.id);
-                        if(t.current === 10 && !t.isMuted) speakText(`${t.title} 10초 전`);
+                        
+                        if(t.current === 10 && !t.isMuted) {
+                            speakText(`${t.title} 10초 전`);
+                        }
+                        
                         if(t.current === 0) {
                             if(!t.isMuted) playBeep();
                             const flash = document.getElementById(`flash-${t.id}`);
@@ -646,7 +629,113 @@
         }, 1000);
 
         // ==========================================
-        // 2. 현자의 분수 로직
+        // 2. 보스 공략 실시간 공유 로직 (비밀번호 191919 인증 적용)
+        // ==========================================
+        window.bossTopics = [];
+
+        window.verifyBossPassword = function(actionName, callback) {
+            const pw = prompt(`🛡️ [보스 공략 ${actionName}] 권한 확인\n관리자 비밀번호(191919)를 입력하세요:`);
+            if (pw === null) return; // 취소
+            if (pw === '191919') {
+                callback();
+            } else {
+                alert('⚠️ 비밀번호가 일치하지 않습니다.');
+            }
+        };
+
+        window.addBossTopic = function() {
+            const input = document.getElementById('boss-topic-input');
+            const title = input.value.trim();
+            if(!title) return;
+            
+            window.verifyBossPassword('추가', () => {
+                window.bossTopics.push({
+                    id: 'boss_strat_' + Date.now(),
+                    title: title,
+                    content: ''
+                });
+                input.value = '';
+                window.saveBossData();
+                window.renderBossTopics();
+            });
+        };
+
+        window.removeBossTopic = function(id) {
+            window.verifyBossPassword('삭제', () => {
+                window.bossTopics = window.bossTopics.filter(t => t.id !== id);
+                window.saveBossData();
+                window.renderBossTopics();
+            });
+        };
+
+        window.updateTopicTitleWithPassword = function(id, title) {
+            window.verifyBossPassword('제목 수정', () => {
+                const topic = window.bossTopics.find(t => t.id === id);
+                if(topic) {
+                    topic.title = title;
+                    window.saveBossData();
+                }
+            }, () => {
+                window.renderBossTopics(); // 취소 또는 실패 시 원래 제목으로 복원 렌더링
+            });
+        };
+
+        window.updateTopicContent = function(id, content) {
+            const topic = window.bossTopics.find(t => t.id === id);
+            if(topic) {
+                topic.content = content;
+                window.saveBossData();
+            }
+        };
+
+        window.renderBossTopics = function() {
+            const container = document.getElementById('boss-topics-container');
+            if(!container) return;
+
+            const activeEl = document.activeElement;
+            const activeId = activeEl ? activeEl.id : null;
+            const cursorStart = activeId && (activeId.startsWith('ta_') || activeId.startsWith('ti_')) ? activeEl.selectionStart : null;
+            const cursorEnd = activeId && (activeId.startsWith('ta_') || activeId.startsWith('ti_')) ? activeEl.selectionEnd : null;
+
+            if(window.bossTopics.length === 0) {
+                container.innerHTML = `<div class="text-center text-zinc-500 py-10 bg-[#1a1a1c] rounded-xl border border-zinc-800">등록된 보스 공략이 없습니다. 위에서 보스 공략을 추가해 주세요!</div>`;
+                return;
+            }
+
+            let html = '';
+            window.bossTopics.forEach(t => {
+                html += `
+                    <div class="bg-[#1a1a1c] border border-zinc-700 rounded-xl p-5 shadow space-y-3">
+                        <div class="flex justify-between items-center border-b border-zinc-800 pb-3 gap-3">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-lg">📌</span>
+                                <input type="text" id="ti_${t.id}" value="${t.title}" onchange="window.updateTopicTitleWithPassword('${t.id}', this.value)" class="bg-transparent text-white font-bold text-lg border-b border-transparent hover:border-zinc-500 focus:border-[#5b66f5] outline-none w-full transition-colors" title="수정하려면 엔터 또는 포커스 아웃 (비밀번호 필요)">
+                            </div>
+                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                <span class="text-xs text-green-400 font-bold bg-green-500/10 border border-green-500/30 px-3 py-1 rounded">✏️ 실시간 공유 중</span>
+                                <button onclick="window.removeBossTopic('${t.id}')" class="text-xs text-red-400 hover:text-red-300 bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded transition-colors cursor-pointer">공략 삭제</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-zinc-400 mb-1">공략 및 소견 내용 (비밀번호 없이 실시간 자유 수정)</label>
+                            <textarea id="ta_${t.id}" oninput="window.updateTopicContent('${t.id}', this.value)" placeholder="이곳에 공략 내용이나 주의사항, 파티원 소견을 자유롭게 적어주세요..." rows="4" class="w-full bg-[#242427] border border-zinc-600 text-white p-3 rounded outline-none focus:border-[#5b66f5] transition-colors text-sm">${t.content || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            if (activeId && (activeId.startsWith('ta_') || activeId.startsWith('ti_'))) {
+                const restoredEl = document.getElementById(activeId);
+                if (restoredEl) {
+                    restoredEl.focus();
+                    if(cursorStart !== null && restoredEl.setSelectionRange) restoredEl.setSelectionRange(cursorStart, cursorEnd);
+                }
+            }
+        };
+
+        // ==========================================
+        // 3. 현자의 분수 로직
         // ==========================================
         const fountainItems = ["훈장", "두루마리", "음식", "와인"];
         let possibleCases = [];
@@ -704,7 +793,9 @@
         }
 
         function updateFountainUI() {
-            document.getElementById('count').innerText = possibleCases.length;
+            const countEl = document.getElementById('count');
+            if(!countEl) return;
+            countEl.innerText = possibleCases.length;
             if (possibleCases.length > 0) {
                 document.getElementById('recommendation').innerText = possibleCases[0].join(" - ");
                 document.getElementById('remaining-list').innerHTML = possibleCases.map(c => c.join(" - ")).join("<br>");
@@ -715,7 +806,7 @@
         }
 
         // ==========================================
-        // 3. 분배 계산기 로직
+        // 4. 분배 계산기 로직
         // ==========================================
         function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
         function parseNum(str) { return parseFloat(str.replace(/,/g, '')) || 0; }
@@ -727,7 +818,9 @@
         }
 
         function calcDist() {
-            let sales = parseNum(document.getElementById('dist-sales').value);
+            const salesEl = document.getElementById('dist-sales');
+            if(!salesEl) return;
+            let sales = parseNum(salesEl.value);
             let scissors = parseNum(document.getElementById('dist-scissors').value);
             let feeRate = parseNum(document.getElementById('dist-fee').value);
             let people = parseNum(document.getElementById('dist-people').value) || 1;
@@ -754,7 +847,6 @@
             calcDist();
         }
 
-        // 상세 복사 기능 추가
         function copyDistResult() {
             const sales = document.getElementById('dist-sales').value || '0';
             const scissors = document.getElementById('dist-scissors').value || '0';
@@ -804,20 +896,27 @@
 
         function showCopyToast() {
             const toast = document.getElementById('copy-toast');
+            if(!toast) return;
             toast.classList.remove('hidden');
             setTimeout(() => {
                 toast.classList.add('hidden');
             }, 3000);
         }
 
-        document.getElementById('dist-sales').addEventListener('input', handleNumInput);
-        document.getElementById('dist-scissors').addEventListener('input', handleNumInput);
-        document.getElementById('dist-mail-fixed').addEventListener('input', handleNumInput);
-        document.getElementById('dist-fee').addEventListener('input', calcDist);
-        document.getElementById('dist-people').addEventListener('input', calcDist);
-        document.getElementById('dist-mail-percent').addEventListener('input', calcDist);
+        document.addEventListener('DOMContentLoaded', () => {
+            const salesInput = document.getElementById('dist-sales');
+            if(salesInput) {
+                salesInput.addEventListener('input', handleNumInput);
+                document.getElementById('dist-scissors').addEventListener('input', handleNumInput);
+                document.getElementById('dist-mail-fixed').addEventListener('input', handleNumInput);
+                document.getElementById('dist-fee').addEventListener('input', calcDist);
+                document.getElementById('dist-people').addEventListener('input', calcDist);
+                document.getElementById('dist-mail-percent').addEventListener('input', calcDist);
+            }
+        });
     </script>
     
+    <!-- ================= Firebase 실시간 클라우드 동기화 ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -832,6 +931,7 @@
         let firebaseReady = false;
         let setDocGlobal = null;
         let guildDocRefGlobal = null;
+        let bossDocRefGlobal = null;
 
         const firebaseConfig = {
             apiKey: "AIzaSyA6-WVBhlZx8PA8qTmrDlR03O0lIvdoRDc",
@@ -851,15 +951,11 @@
                 await signInAnonymously(auth);
                 
                 guildDocRefGlobal = doc(db, 'artifacts', 'fighting-dog', 'public', 'data', 'guildData', 'monthlyMembers');
+                bossDocRefGlobal = doc(db, 'artifacts', 'fighting-dog', 'public', 'data', 'bossData', 'topics');
                 setDocGlobal = setDoc;
                 firebaseReady = true;
 
-                const statusEl = document.getElementById('cloud-status');
-                statusEl.innerHTML = "✅ 실시간 클라우드 동기화 켜짐 (자동 저장 중)";
-                statusEl.classList.replace('bg-blue-900/30', 'bg-green-900/30');
-                statusEl.classList.replace('border-blue-500/50', 'border-green-500/50');
-                statusEl.classList.replace('text-blue-300', 'text-green-300');
-
+                // 길드원 데이터 실시간 수신
                 onSnapshot(guildDocRefGlobal, (docSnap) => {
                     if (docSnap.exists()) {
                         const cloudData = docSnap.data().data;
@@ -872,15 +968,20 @@
                             }
                         }
                     }
-                }, (error) => {
-                    console.error("클라우드 읽기 에러:", error);
-                    statusEl.innerHTML = "❌ 클라우드 연결 오류 (Firebase 규칙 설정을 확인하세요)";
-                    statusEl.classList.replace('bg-green-900/30', 'bg-red-900/30');
-                });
-            } catch (e) {
-                console.error("Firebase 로드 실패:", e);
-                document.getElementById('cloud-status').innerHTML = "⚠️ 클라우드 연결 실패. 로컬 저장소 모드로 작동합니다.";
-            }
+                }, (error) => {});
+
+                // 보스 공략 데이터 실시간 수신
+                onSnapshot(bossDocRefGlobal, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const cloudBoss = docSnap.data().topics;
+                        if(cloudBoss) {
+                            window.bossTopics = cloudBoss;
+                            window.renderBossTopics();
+                        }
+                    }
+                }, (error) => {});
+
+            } catch (e) {}
         }
 
         initFirebase();
@@ -888,9 +989,15 @@
         window.saveGuildData = function() {
             localStorage.setItem('chuokGuildData', JSON.stringify(window.guildDataByMonth));
             if (firebaseReady && setDocGlobal && guildDocRefGlobal) {
-                setDocGlobal(guildDocRefGlobal, { data: window.guildDataByMonth }).catch(e => console.error("클라우드 저장 실패", e));
+                setDocGlobal(guildDocRefGlobal, { data: window.guildDataByMonth }).catch(e => {});
             }
-        }
+        };
+
+        window.saveBossData = function() {
+            if (firebaseReady && setDocGlobal && bossDocRefGlobal) {
+                setDocGlobal(bossDocRefGlobal, { topics: window.bossTopics }).catch(e => {});
+            }
+        };
 
         window.unlockMemberTab = function() {
             const pwInput = document.getElementById('member-password');
@@ -909,18 +1016,18 @@
                 errDiv.classList.remove('hidden');
                 setTimeout(() => errDiv.classList.add('hidden'), 3000);
             }
-        }
+        };
 
         window.getActiveKey = function() {
             return `${window.activeYear}-${window.activeMonth}`;
-        }
+        };
 
         window.ensureMonthData = function() {
             const key = window.getActiveKey();
             if (!window.guildDataByMonth[key]) {
                 window.guildDataByMonth[key] = [];
             }
-        }
+        };
 
         window.changeMonth = function(offset) {
             const currentKey = window.getActiveKey();
@@ -946,7 +1053,7 @@
             
             document.getElementById('month-display').innerText = `${window.activeYear}년 ${window.activeMonth}월`;
             window.renderGuildMembers();
-        }
+        };
 
         window.addGuildMember = function() {
             const input = document.getElementById('new-member-input');
@@ -960,9 +1067,11 @@
 
             if (activeData.find(m => m.name === name)) {
                 const errEl = document.getElementById('member-add-error');
-                errEl.innerText = "이미 등록된 길드원 닉네임입니다.";
-                errEl.classList.remove('hidden');
-                setTimeout(() => errEl.classList.add('hidden'), 3000);
+                if(errEl) {
+                    errEl.innerText = "이미 등록된 길드원 닉네임입니다.";
+                    errEl.classList.remove('hidden');
+                    setTimeout(() => errEl.classList.add('hidden'), 3000);
+                }
                 return;
             }
 
@@ -976,14 +1085,14 @@
             window.saveGuildData(); 
             input.value = '';
             window.renderGuildMembers();
-        }
+        };
 
         window.removeGuildMember = function(id) {
             const key = window.getActiveKey();
             window.guildDataByMonth[key] = window.guildDataByMonth[key].filter(m => m.id !== id);
             window.saveGuildData(); 
             window.renderGuildMembers();
-        }
+        };
 
         window.renderGuildMembers = function() {
             window.ensureMonthData();
@@ -995,6 +1104,8 @@
             const unverifiedContainer = document.getElementById('unverified-container');
             const verifiedContainer = document.getElementById('verified-container');
             
+            if(!masterContainer) return;
+
             masterContainer.innerHTML = '';
             adminContainer.innerHTML = '';
             memberContainer.innerHTML = '';
@@ -1041,10 +1152,10 @@
                 unverifiedContainer.innerHTML = '<div class="text-center text-zinc-600 text-sm mt-8">인원을 추가해주세요</div>';
                 verifiedContainer.innerHTML = '<div class="text-center text-zinc-600 text-sm mt-8">인원을 추가해주세요</div>';
             }
-        }
+        };
 
-        window.allowDrop = function(ev) { ev.preventDefault(); }
-        window.dragMember = function(ev) { ev.dataTransfer.setData("memberId", ev.target.id); }
+        window.allowDrop = function(ev) { ev.preventDefault(); };
+        window.dragMember = function(ev) { ev.dataTransfer.setData("memberId", ev.target.id); };
         window.dropMember = function(ev, isVerifiedTarget) {
             ev.preventDefault();
             const id = ev.dataTransfer.getData("memberId");
@@ -1056,15 +1167,15 @@
                 window.saveGuildData(); 
                 window.renderGuildMembers();
             }
-        }
+        };
         
         window.onload = function() {
             renderParties();
             renderBossTimers();
             initFountain();
             calcDist();
-            document.getElementById('month-display').innerText = `${window.activeYear}년 ${window.activeMonth}월`;
-        }
+            renderBossTopics();
+        };
     </script>
 </body>
 </html>
